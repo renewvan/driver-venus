@@ -1,5 +1,7 @@
-"""Persistent MQTT connection to the renewvan bus with LWT and a retained-topic
-publish helper. Same shape as node-tank's publisher.py.
+"""Persistent MQTT connection to the renewvan bus with LWT and a
+retained-topic publish helper. Same shape as the other renewvan/node-*
+publishers, plus clearing a retained topic when the source reading goes
+invalid.
 """
 
 from __future__ import annotations
@@ -9,17 +11,19 @@ import logging
 
 import paho.mqtt.client as mqtt
 
-from node_battery.config import MqttConfig
+from node_venus.config import MqttConfig
 
 logger = logging.getLogger(__name__)
 
-HEALTH_TOPIC = "renewvan/battery/health"
+# 3 segments, not 4: liveness for the whole node, so it cannot be mistaken
+# for an entity keyed by a fake `health` id.
+HEALTH_TOPIC = "renewvan/venus/health"
 
 
 class Publisher:
     def __init__(self, config: MqttConfig) -> None:
         self._config = config
-        self._client = mqtt.Client(client_id="node-battery", clean_session=False)
+        self._client = mqtt.Client(client_id="node-venus", clean_session=False)
         if config.username:
             self._client.username_pw_set(config.username, config.password)
         self._client.will_set(HEALTH_TOPIC, payload="offline", qos=1, retain=True)
@@ -40,6 +44,12 @@ class Publisher:
         self._client.loop_start()
 
     def publish(self, topic: str, payload: object) -> None:
+        """Publish a retained value. `None` clears the retained topic (an
+        empty retained payload), so a reading that stopped being valid
+        does not linger on the bus."""
+        if payload is None:
+            self._client.publish(topic, payload=None, qos=1, retain=True)
+            return
         self._client.publish(topic, payload=json.dumps(payload), qos=1, retain=True)
 
     def disconnect(self) -> None:

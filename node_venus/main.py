@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""node-battery entrypoint."""
+"""node-venus entrypoint."""
 
 from __future__ import annotations
 
 import argparse
 import logging
 
-from node_battery.config import load_config
-from node_battery.publisher import Publisher
-from node_battery.subscriber import Subscriber
+from node_venus.config import load_config
+from node_venus.publisher import Publisher
+from node_venus.subscriber import Subscriber
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="node-battery: Victron Venus OS MQTT -> renewvan-bus battery remap"
+        description="node-venus: Victron Venus OS MQTT -> renewvan bus (battery, solar, charger)"
     )
     parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()

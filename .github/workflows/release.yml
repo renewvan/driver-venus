@@ -39,5 +39,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/${{ github.repository_owner }}/node-battery:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/node-battery:latest
+            ghcr.io/${{ github.repository_owner }}/node-venus:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/node-venus:latest

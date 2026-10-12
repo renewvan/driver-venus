@@ -5,6 +5,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY node_battery/ node_battery/
+COPY node_venus/ node_venus/
 
-ENTRYPOINT ["python", "-m", "node_battery.main"]
+ENTRYPOINT ["python", "-m", "node_venus.main"]
