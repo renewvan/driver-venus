@@ -36,7 +36,7 @@ discovered from the feed.
 |---|---|---|
 | `system/0/Batteries[]` `soc`/`voltage`/`current`/`power` | `battery/<instance>/soc_pct`/`voltage_v`/`current_a`/`power_w` | direct copy, signed (+charging) |
 | `system/0/Batteries[]` `temperature` | `battery/<instance>/temperature_c` | only when the device has a probe |
-| `battery/<n>/TimeToGo` | `battery/<n>/time_to_go_s` | Venus's "no estimate" (null, or ~864000 s) clears the topic |
+| `battery/<n>/TimeToGo` | `battery/<n>/time_to_go_s` | Venus's `null` clears the topic; its ~10-day cap (863999.9375 s) is published as-is |
 | `battery/<n>/History/TimeSinceLastFullCharge` | `battery/<n>/time_since_full_charge_s` | |
 | `system/0/SystemState/State` | `battery/<id>/charge_state` | one system-wide value, fanned out to every battery id seen |
 | `solarcharger/<n>/Yield/Power` | `solar/<n>/power_w` | |

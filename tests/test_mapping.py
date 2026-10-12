@@ -187,12 +187,18 @@ def test_time_to_go_maps_when_meaningful():
     ]
 
 
-def test_time_to_go_sentinel_and_null_clear_the_topic():
-    # Venus sends ~864000 s (10 days) or null when there is no estimate;
-    # publishing 10 days as a real ETA would be misleading.
+def test_time_to_go_null_clears_the_topic():
+    # Venus sends null when the device has no estimate; clear the retained topic.
     cleared = [("renewvan/battery/290/time_to_go_s", None)]
-    assert map_service_message("battery", "290", "TimeToGo", fx.TIME_TO_GO_SENTINEL) == cleared
     assert map_service_message("battery", "290", "TimeToGo", fx.TIME_TO_GO_NULL) == cleared
+
+
+def test_time_to_go_passes_venus_ten_day_cap_through():
+    # Venus caps its estimate at ~864000 s and shows it as `9d 23h`; the hub reports the
+    # same value rather than hiding it, so consumers match the Venus screen.
+    assert map_service_message("battery", "290", "TimeToGo", fx.TIME_TO_GO_SENTINEL) == [
+        ("renewvan/battery/290/time_to_go_s", 863999.9375)
+    ]
 
 
 # --- everything else is ignored -----------------------------------------------

@@ -17,7 +17,7 @@ open-source node cannot know which instances a given van has.
 
 A `None` value in a returned `(topic, value)` pair means "clear this
 retained topic" (Venus sends `null` when a reading stops being valid, e.g.
-`TimeToGo` once the battery is no longer discharging). The publisher turns
+`TimeToGo` when the device has no estimate). The publisher turns
 it into an empty retained payload so a stale value does not linger.
 """
 
@@ -68,13 +68,6 @@ CHARGER_STATE_CODES: dict[int, str] = {
     7: "equalize",
     252: "external_control",
 }
-
-# Venus reports "no estimate" as ~864000 s (10 days, observed as
-# 863999.9375 on a live GX) while idle/charging, or as null. Neither is a
-# meaningful ETA, so anything at or above this threshold is treated as
-# "no estimate". It sits just under the sentinel to absorb the float
-# rounding Venus applies.
-_NO_ESTIMATE_S = 863999
 
 # (venus service class, venus path) -> (entity, property, scale).
 # `scale` converts Venus's unit to the schema's. Only paths the schema has
@@ -177,8 +170,6 @@ def map_service_message(
     topic = entity_topic(entity, instance, prop)
 
     if value is None:
-        return [(topic, None)]
-    if prop == "time_to_go_s" and value >= _NO_ESTIMATE_S:
         return [(topic, None)]
     # Round scaled values: 0.12 kWh * 1000 is 119.99999731..., not 120.
     scaled = round(value * scale, 3) if scale != 1.0 else value
