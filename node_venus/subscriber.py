@@ -124,3 +124,8 @@ class Subscriber:
                 self._client.publish(self._keepalive_topic, payload="")
         finally:
             self._client.loop_stop()
+            # A pending flush must not publish after `main` has disconnected
+            # the renewvan-bus publisher.
+            with self._history_lock:
+                if self._history_timer is not None:
+                    self._history_timer.cancel()

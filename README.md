@@ -61,9 +61,10 @@ once and each `R/<portal>/keepalive` makes Venus send them all again, so the
 node folds them into one `yield_history_wh` array (the only stateful part of
 the mapping, `SolarYieldHistory`). The array is published after the burst of
 slot messages has been quiet for 2 s, and only when it is complete (every slot
-`DaysAvailable` promises has arrived) and different from the last one: never
-half-filled at startup, never half-shifted at the day rollover, and not again
-on every keepalive. A controller with fewer days logged publishes a shorter
+`DaysAvailable` promises has been re-received since the last publish) and
+different from the last one: never half-filled at startup, never half-shifted
+at the day rollover (a burst that stalls waits for the rest), and not again on
+every keepalive. `DaysAvailable` of 0 publishes nothing. A controller with fewer days logged publishes a shorter
 array. Decision and reasoning: `hub` `docs/adr/0009`.
 
 The mapping is pure (`node_venus/mapping.py`, no network/MQTT client) and is

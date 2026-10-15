@@ -134,18 +134,28 @@ class SolarYieldHistory:
     ones at the day rollover (every slot moves one place), which is the
     non-atomic state the single array exists to avoid. The caller flushes
     once a burst of slot messages has gone quiet (`subscriber.py`).
+
     `flush()` returns a controller's array only when every slot
-    `DaysAvailable` promises has arrived and the array differs from what
-    was last returned, so Venus re-sending every slot on each keepalive
-    does not republish.
+    `DaysAvailable` promises has been (re)received *since the last flush*,
+    not merely at some point. Counting slots seen ever would let a burst
+    that stalls half way publish new slots beside the previous burst's
+    old ones, which is the half-shifted array again; this way a stalled
+    burst just waits for the rest. It also only returns an array that
+    differs from the last one, so Venus re-sending every slot on each
+    keepalive does not republish.
 
     A slot Venus reports as `null` is a day with no data: `None` in the
-    array, never `0`. The array still publishes with the gap in it.
+    array, never `0`. The array still publishes with the gap in it. A
+    negative yield is not a reading the schema allows, so it is treated
+    as no data too. `DaysAvailable` of 0 publishes nothing: a controller
+    with no days logged has no history, which is the property being
+    absent, not an empty chart.
     """
 
     def __init__(self) -> None:
         self._days: dict[str, int] = {}
         self._slots: dict[str, dict[int, float | None]] = {}
+        self._fresh: dict[str, set[int]] = {}
         self._published: dict[str, list[float | None]] = {}
 
     def handle(self, service: str, instance: str, path: str, payload: dict) -> bool:
@@ -166,20 +176,22 @@ class SolarYieldHistory:
             return False
         slot = int(match.group(1))
         # Round like the scalar mapping: 0.21 kWh * 1000 is 209.99999..., not 210.
-        self._slots.setdefault(instance, {})[slot] = (
-            None if value is None else round(value * 1000.0, 3)
-        )
+        wh = None if value is None or value < 0 else round(value * 1000.0, 3)
+        self._slots.setdefault(instance, {})[slot] = wh
+        self._fresh.setdefault(instance, set()).add(slot)
         return True
 
     def flush(self) -> list[tuple[str, object]]:
-        """`(topic, array)` for every controller whose history is complete
-        and has changed since the last flush."""
+        """`(topic, array)` for every controller whose history has been
+        completely re-received since the last flush and has changed."""
         results: list[tuple[str, object]] = []
         for instance, days in self._days.items():
-            slots = self._slots.get(instance, {})
-            if any(slot not in slots for slot in range(days)):
+            fresh = self._fresh.get(instance, set())
+            if days < 1 or any(slot not in fresh for slot in range(days)):
                 continue
+            slots = self._slots[instance]
             history = [slots[slot] for slot in range(days)]
+            fresh.clear()
             if self._published.get(instance) == history:
                 continue
             self._published[instance] = history
