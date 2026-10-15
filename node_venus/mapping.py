@@ -66,6 +66,9 @@ CHARGER_STATE_CODES: dict[int, str] = {
     5: "float",
     6: "storage",
     7: "equalize",
+    246: "absorption",  # repeated absorption
+    247: "equalize",  # auto equalize / recondition
+    248: "float",  # BatterySafe (voltage held below absorption)
     252: "external_control",
 }
 
@@ -82,6 +85,7 @@ _SERVICE_PATHS: dict[tuple[str, str], tuple[str, str, float]] = {
     ("solarcharger", "History/Daily/0/Yield"): ("solar", "yield_today_wh", 1000.0),
     ("alternator", "Dc/0/Voltage"): ("charger", "voltage_v", 1.0),
     ("alternator", "Dc/0/Current"): ("charger", "current_a", 1.0),
+    ("alternator", "Dc/0/Power"): ("charger", "power_w", 1.0),
     ("alternator", "Dc/In/V"): ("charger", "input_voltage_v", 1.0),
     ("charger", "Dc/0/Voltage"): ("charger", "voltage_v", 1.0),
     ("charger", "Dc/0/Current"): ("charger", "current_a", 1.0),

@@ -2,6 +2,8 @@
 broker or GX device required.
 """
 
+import pytest
+
 from node_venus.mapping import (
     map_batteries,
     map_charge_state,
@@ -170,6 +172,29 @@ def test_charger_current_does_not_republish_source():
     # current update.
     pairs = map_service_message("alternator", "288", "Dc/0/Current", {"value": 18.2})
     assert pairs == [("renewvan/charger/288/current_a", 18.2)]
+
+
+def test_alternator_output_power():
+    assert map_service_message("alternator", "288", "Dc/0/Power", fx.ALTERNATOR_POWER) == [
+        ("renewvan/charger/288/power_w", 243.0)
+    ]
+
+
+def test_mains_charger_has_no_power_path():
+    # Venus's `charger` class publishes AC input power (`Ac/In/L1/P`), not
+    # the output power the schema's `power_w` means, so it must not be mapped.
+    assert map_service_message("charger", "10", "Ac/In/L1/P", {"value": 180.0}) == []
+
+
+@pytest.mark.parametrize(
+    ("code", "stage"),
+    [(246, "absorption"), (247, "equalize"), (248, "float"), (11, "unknown")],
+)
+def test_mains_charger_extended_state_codes(code, stage):
+    # Phoenix/BlueSmart chargers report these beyond the basic 0-7 stages.
+    assert map_service_message("charger", "10", "State", {"value": code}) == [
+        ("renewvan/charger/10/charge_state", stage)
+    ]
 
 
 # --- per-battery extras -------------------------------------------------------

@@ -44,8 +44,9 @@ discovered from the feed.
 | `solarcharger/<n>/Pv/V`/`Pv/I` | `solar/<n>/pv_voltage_v`/`pv_current_a` | |
 | `solarcharger/<n>/History/Daily/0/Yield` | `solar/<n>/yield_today_wh` | kWh → Wh |
 | `solarcharger/<n>/State` | `solar/<n>/charge_state` | |
-| `alternator/<n>/Dc/0/Voltage`/`Current`, `Dc/In/V` | `charger/<n>/voltage_v`/`current_a`/`input_voltage_v` | DC-DC charger; `source` = `alternator` |
-| `charger/<n>/Dc/0/Voltage`/`Current` | `charger/<n>/voltage_v`/`current_a` | AC charger (e.g. BlueSmart); `source` = `ac` |
+| `alternator/<n>/Dc/0/Voltage`/`Current`/`Power`, `Dc/In/V` | `charger/<n>/voltage_v`/`current_a`/`power_w`/`input_voltage_v` | DC-DC charger; `source` = `alternator` |
+| `charger/<n>/Dc/0/Voltage`/`Current` | `charger/<n>/voltage_v`/`current_a` | AC charger (e.g. BlueSmart); `source` = `ac`. Venus publishes AC *input* power, not output, so `power_w` is not set |
+| `alternator/<n>/State`, `charger/<n>/State` | `charger/<n>/charge_state` | 246 → `absorption`, 247 → `equalize`, 248 (BatterySafe) → `float`; any other unmapped code (e.g. 11, power supply) → `unknown` |
 
 `Batteries[].state`/`.bmsstate`/`.name`/`.id` are never read. Anything Venus
 publishes that the schema has no property for is ignored. A value that goes
