@@ -5,6 +5,7 @@ broker or GX device required.
 import pytest
 
 from node_venus.mapping import (
+    SolarYieldHistory,
     map_batteries,
     map_charge_state,
     map_service_message,
@@ -233,3 +234,144 @@ def test_unmapped_service_or_path_maps_to_nothing():
     assert map_service_message("solarcharger", "291", "Pv/Unknown", {"value": 1}) == []
     assert map_service_message("vebus", "276", "Dc/0/Voltage", {"value": 13.0}) == []
     assert map_service_message("logger", "0", "Buffer/FreeDiskSpace", {"value": 1}) == []
+
+
+# --- Solar daily history -> `yield_history_wh` (docs/adr/0009) -----------
+
+HISTORY_TOPIC = "renewvan/solar/291/yield_history_wh"
+
+
+def _record(history, messages, instance="291"):
+    """Record `(path, payload)` pairs without flushing, like a burst of
+    Venus slot messages arriving before the quiet period ends."""
+    for path, payload in messages:
+        history.handle("solarcharger", instance, path, payload)
+
+
+def _captured_messages():
+    days = [("History/Overall/DaysAvailable", fx.SOLAR_DAYS_AVAILABLE)]
+    slots = [
+        (f"History/Daily/{n}/Yield", payload)
+        for n, payload in enumerate(fx.SOLAR_YIELD_HISTORY_KWH)
+    ]
+    return days + slots
+
+
+def test_solar_history_flushes_one_array_newest_first_in_wh():
+    history = SolarYieldHistory()
+    _record(history, _captured_messages())
+
+    [(topic, array)] = history.flush()
+
+    assert topic == HISTORY_TOPIC
+    assert len(array) == 31
+    # Captured: today 0.21 kWh, yesterday 0.18, then 0.19 ... (no float noise).
+    assert array[:4] == [210.0, 180.0, 190.0, 140.0]
+    # A real dark day stays 0 (the controller logged it), not None.
+    assert array[7] == 0.0
+
+
+def test_solar_history_recording_publishes_nothing_by_itself():
+    history = SolarYieldHistory()
+    assert history.handle("solarcharger", "291", "History/Daily/0/Yield", {"value": 0.21}) is True
+
+
+def test_solar_history_never_flushes_a_half_filled_array():
+    history = SolarYieldHistory()
+    _record(history, _captured_messages()[:-1])  # all but the last slot
+    assert history.flush() == []
+
+    _record(history, _captured_messages()[-1:])
+    assert len(history.flush()) == 1
+
+
+def test_solar_history_waits_for_days_available_whatever_the_arrival_order():
+    history = SolarYieldHistory()
+    messages = _captured_messages()
+    _record(history, messages[1:] + messages[:1])  # slots first, DaysAvailable last
+    assert [topic for topic, _ in history.flush()] == [HISTORY_TOPIC]
+
+
+def test_solar_history_keepalive_resend_does_not_republish():
+    history = SolarYieldHistory()
+    _record(history, _captured_messages())
+    assert len(history.flush()) == 1
+
+    # Venus re-sends every slot on the next keepalive: nothing changed.
+    _record(history, _captured_messages())
+    assert history.flush() == []
+
+
+def test_solar_history_null_slot_is_a_gap_not_zero():
+    history = SolarYieldHistory()
+    messages = _captured_messages()
+    messages[1 + 5] = ("History/Daily/5/Yield", {"value": None})
+    _record(history, messages)
+
+    [(_, array)] = history.flush()
+
+    assert array[5] is None
+    assert array[4] == 160.0 and array[6] == 10.0
+
+
+def test_solar_history_day_rollover_flushes_one_consistent_shifted_array():
+    history = SolarYieldHistory()
+    _record(history, _captured_messages())
+    [(_, before)] = history.flush()
+
+    # Midnight: every slot shifts one place and today starts at 0. The whole
+    # burst is recorded, then flushed once: a consumer sees the old array and
+    # then the new one, never a mix of the two.
+    shifted = [{"value": 0.0}] + fx.SOLAR_YIELD_HISTORY_KWH[:-1]
+    _record(history, [(f"History/Daily/{n}/Yield", p) for n, p in enumerate(shifted)])
+
+    assert history.flush() == [(HISTORY_TOPIC, [0.0] + before[:-1])]
+
+
+def test_solar_history_short_history_for_a_young_controller():
+    history = SolarYieldHistory()
+    _record(
+        history,
+        [
+            ("History/Overall/DaysAvailable", {"value": 3}),
+            ("History/Daily/0/Yield", {"value": 0.21}),
+            ("History/Daily/1/Yield", {"value": 0.18}),
+            ("History/Daily/2/Yield", {"value": 0.19}),
+            # Venus can still send a slot beyond DaysAvailable: it is not history.
+            ("History/Daily/3/Yield", {"value": 9.99}),
+        ],
+    )
+    assert history.flush() == [(HISTORY_TOPIC, [210.0, 180.0, 190.0])]
+
+
+def test_solar_history_keeps_controllers_apart():
+    history = SolarYieldHistory()
+    _record(history, _captured_messages(), instance="291")
+    _record(
+        history,
+        [
+            ("History/Overall/DaysAvailable", {"value": 1}),
+            ("History/Daily/0/Yield", {"value": 0.5}),
+        ],
+        instance="292",
+    )
+    flushed = dict(history.flush())
+    assert set(flushed) == {HISTORY_TOPIC, "renewvan/solar/292/yield_history_wh"}
+    assert flushed["renewvan/solar/292/yield_history_wh"] == [500.0]
+    assert len(flushed[HISTORY_TOPIC]) == 31
+
+
+def test_solar_history_ignores_other_services_and_paths():
+    history = SolarYieldHistory()
+    assert history.handle("battery", "290", "History/Daily/0/Yield", {"value": 1.0}) is False
+    other_path = "History/Daily/0/MaxPower"
+    assert history.handle("solarcharger", "291", other_path, {"value": 1.0}) is False
+    assert history.handle("solarcharger", "291", "Yield/Power", {"value": 14.0}) is False
+    assert history.flush() == []
+
+
+def test_solar_yield_today_still_maps_from_the_captured_slot_zero():
+    [(topic, value)] = map_service_message(
+        "solarcharger", "291", "History/Daily/0/Yield", fx.SOLAR_YIELD_HISTORY_KWH[0]
+    )
+    assert (topic, value) == ("renewvan/solar/291/yield_today_wh", 210.0)

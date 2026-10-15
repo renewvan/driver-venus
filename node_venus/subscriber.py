@@ -16,12 +16,14 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 import time
 
 import paho.mqtt.client as mqtt
 
 from node_venus.config import AppConfig
 from node_venus.mapping import (
+    SolarYieldHistory,
     map_batteries,
     map_charge_state,
     map_service_message,
@@ -32,6 +34,10 @@ from node_venus.publisher import Publisher
 logger = logging.getLogger(__name__)
 
 KEEPALIVE_INTERVAL_S = 30
+# Venus sends a controller's day slots as a burst of one-per-slot messages.
+# The history array is published once no history message has arrived for
+# this long, so a consumer never sees a half-filled or half-shifted array.
+HISTORY_QUIET_PERIOD_S = 2.0
 
 
 class Subscriber:
@@ -45,6 +51,10 @@ class Subscriber:
         # Battery ids seen so far: the system-wide charge state is fanned
         # out to exactly these.
         self._battery_ids: set[str] = set()
+        # Folds the per-day-slot Venus messages into one history array.
+        self._solar_history = SolarYieldHistory()
+        self._history_lock = threading.Lock()
+        self._history_timer: threading.Timer | None = None
 
         self._client = mqtt.Client(client_id="node-venus-source", clean_session=False)
         self._client.reconnect_delay_set(min_delay=1, max_delay=30)
@@ -84,7 +94,24 @@ class Subscriber:
             if parsed is None:
                 return
             pairs = map_service_message(*parsed, payload)
+            with self._history_lock:
+                if self._solar_history.handle(*parsed, payload):
+                    self._schedule_history_flush()
 
+        for topic, value in pairs:
+            self._publisher.publish(topic, value)
+
+    def _schedule_history_flush(self) -> None:
+        """(Re)start the quiet-period timer. Caller holds `_history_lock`."""
+        if self._history_timer is not None:
+            self._history_timer.cancel()
+        self._history_timer = threading.Timer(HISTORY_QUIET_PERIOD_S, self._flush_history)
+        self._history_timer.daemon = True
+        self._history_timer.start()
+
+    def _flush_history(self) -> None:
+        with self._history_lock:
+            pairs = self._solar_history.flush()
         for topic, value in pairs:
             self._publisher.publish(topic, value)
 

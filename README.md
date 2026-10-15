@@ -43,6 +43,7 @@ discovered from the feed.
 | `solarcharger/<n>/Dc/0/Voltage`/`Current` | `solar/<n>/battery_voltage_v`/`battery_current_a` | |
 | `solarcharger/<n>/Pv/V`/`Pv/I` | `solar/<n>/pv_voltage_v`/`pv_current_a` | |
 | `solarcharger/<n>/History/Daily/0/Yield` | `solar/<n>/yield_today_wh` | kWh → Wh |
+| `solarcharger/<n>/History/Daily/<0..N-1>/Yield`, `History/Overall/DaysAvailable` | `solar/<n>/yield_history_wh` | one retained JSON array, newest first (index 0 = today), kWh → Wh. A Venus `null` slot is a `null` entry (no data), never `0`. See below |
 | `solarcharger/<n>/State` | `solar/<n>/charge_state` | |
 | `alternator/<n>/Dc/0/Voltage`/`Current`/`Power`, `Dc/In/V` | `charger/<n>/voltage_v`/`current_a`/`power_w`/`input_voltage_v` | DC-DC charger; `source` = `alternator` |
 | `charger/<n>/Dc/0/Voltage`/`Current` | `charger/<n>/voltage_v`/`current_a` | AC charger (e.g. BlueSmart); `source` = `ac`. Venus publishes AC *input* power, not output, so `power_w` is not set |
@@ -52,6 +53,18 @@ discovered from the feed.
 publishes that the schema has no property for is ignored. A value that goes
 `null` clears its retained topic (an empty retained payload), so a reading
 that stopped being valid does not linger on the bus.
+
+**Solar history.** Venus publishes a controller's day log as one message per
+day slot (`History/Daily/0..30/Yield`, kWh, slot 0 = today) and the slot count
+in `History/Overall/DaysAvailable`. A fresh subscribe delivers every slot at
+once and each `R/<portal>/keepalive` makes Venus send them all again, so the
+node folds them into one `yield_history_wh` array (the only stateful part of
+the mapping, `SolarYieldHistory`). The array is published after the burst of
+slot messages has been quiet for 2 s, and only when it is complete (every slot
+`DaysAvailable` promises has arrived) and different from the last one: never
+half-filled at startup, never half-shifted at the day rollover, and not again
+on every keepalive. A controller with fewer days logged publishes a shorter
+array. Decision and reasoning: `hub` `docs/adr/0009`.
 
 The mapping is pure (`node_venus/mapping.py`, no network/MQTT client) and is
 what `tests/test_mapping.py` exercises against fixture Venus payloads, no
