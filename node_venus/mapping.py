@@ -23,6 +23,8 @@ it into an empty retained payload so a stale value does not linger.
 
 from __future__ import annotations
 
+import re
+
 # Venus `Batteries[]` field -> battery entity property. Venus already uses
 # the same +charging/-discharging sign convention as the schema.
 _BATTERY_FIELDS: dict[str, str] = {
@@ -66,6 +68,9 @@ CHARGER_STATE_CODES: dict[int, str] = {
     5: "float",
     6: "storage",
     7: "equalize",
+    246: "absorption",  # repeated absorption
+    247: "equalize",  # auto equalize / recondition
+    248: "float",  # BatterySafe (voltage held below absorption)
     252: "external_control",
 }
 
@@ -82,6 +87,7 @@ _SERVICE_PATHS: dict[tuple[str, str], tuple[str, str, float]] = {
     ("solarcharger", "History/Daily/0/Yield"): ("solar", "yield_today_wh", 1000.0),
     ("alternator", "Dc/0/Voltage"): ("charger", "voltage_v", 1.0),
     ("alternator", "Dc/0/Current"): ("charger", "current_a", 1.0),
+    ("alternator", "Dc/0/Power"): ("charger", "power_w", 1.0),
     ("alternator", "Dc/In/V"): ("charger", "input_voltage_v", 1.0),
     ("charger", "Dc/0/Voltage"): ("charger", "voltage_v", 1.0),
     ("charger", "Dc/0/Current"): ("charger", "current_a", 1.0),
@@ -106,6 +112,91 @@ _STATE_ENTITY: dict[str, str] = {
 
 def entity_topic(entity: str, entity_id: str, prop: str) -> str:
     return f"renewvan/{entity}/{entity_id}/{prop}"
+
+
+_DAILY_YIELD_PATH = re.compile(r"History/Daily/(\d+)/Yield")
+_DAYS_AVAILABLE_PATH = "History/Overall/DaysAvailable"
+
+
+class SolarYieldHistory:
+    """Folds Venus's per-day-slot solar yield messages into one
+    `yield_history_wh` array per controller.
+
+    Venus publishes one message per day slot (`History/Daily/<n>/Yield`,
+    kWh, slot 0 = today) and the slot count in `History/Overall/
+    DaysAvailable`. The renewvan wire carries the whole history as one
+    retained array (docs/adr/0009), so this is the one stateful piece of
+    the otherwise stateless mapping. No network, no clock.
+
+    The array is published by `flush()`, never from `handle()`: Venus
+    sends the slots one message at a time, so publishing as they arrive
+    would put half-filled arrays on the bus at startup and half-*shifted*
+    ones at the day rollover (every slot moves one place), which is the
+    non-atomic state the single array exists to avoid. The caller flushes
+    once a burst of slot messages has gone quiet (`subscriber.py`).
+
+    `flush()` returns a controller's array only when every slot
+    `DaysAvailable` promises has been (re)received *since the last flush*,
+    not merely at some point. Counting slots seen ever would let a burst
+    that stalls half way publish new slots beside the previous burst's
+    old ones, which is the half-shifted array again; this way a stalled
+    burst just waits for the rest. It also only returns an array that
+    differs from the last one, so Venus re-sending every slot on each
+    keepalive does not republish.
+
+    A slot Venus reports as `null` is a day with no data: `None` in the
+    array, never `0`. The array still publishes with the gap in it. A
+    negative yield is not a reading the schema allows, so it is treated
+    as no data too. `DaysAvailable` of 0 publishes nothing: a controller
+    with no days logged has no history, which is the property being
+    absent, not an empty chart.
+    """
+
+    def __init__(self) -> None:
+        self._days: dict[str, int] = {}
+        self._slots: dict[str, dict[int, float | None]] = {}
+        self._fresh: dict[str, set[int]] = {}
+        self._published: dict[str, list[float | None]] = {}
+
+    def handle(self, service: str, instance: str, path: str, payload: dict) -> bool:
+        """Record one per-service message. Returns True if it was a history
+        message (so the caller knows to schedule a `flush()`)."""
+        if service != "solarcharger":
+            return False
+        value = payload.get("value")
+
+        if path == _DAYS_AVAILABLE_PATH:
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or value < 0:
+                return False
+            self._days[instance] = int(value)
+            return True
+
+        match = _DAILY_YIELD_PATH.fullmatch(path)
+        if match is None:
+            return False
+        slot = int(match.group(1))
+        # Round like the scalar mapping: 0.21 kWh * 1000 is 209.99999..., not 210.
+        wh = None if value is None or value < 0 else round(value * 1000.0, 3)
+        self._slots.setdefault(instance, {})[slot] = wh
+        self._fresh.setdefault(instance, set()).add(slot)
+        return True
+
+    def flush(self) -> list[tuple[str, object]]:
+        """`(topic, array)` for every controller whose history has been
+        completely re-received since the last flush and has changed."""
+        results: list[tuple[str, object]] = []
+        for instance, days in self._days.items():
+            fresh = self._fresh.get(instance, set())
+            if days < 1 or any(slot not in fresh for slot in range(days)):
+                continue
+            slots = self._slots[instance]
+            history = [slots[slot] for slot in range(days)]
+            fresh.clear()
+            if self._published.get(instance) == history:
+                continue
+            self._published[instance] = history
+            results.append((entity_topic("solar", instance, "yield_history_wh"), history))
+        return results
 
 
 def map_batteries(payload: dict) -> list[tuple[str, object]]:

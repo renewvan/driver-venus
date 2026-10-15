@@ -56,9 +56,53 @@ SOLAR_STATE_BULK = {"value": 3}
 
 ALTERNATOR_VOLTAGE = {"value": 13.390000343322754}
 ALTERNATOR_INPUT_VOLTAGE = {"value": 12.539999961853027}
+ALTERNATOR_POWER = {"value": 243.0}
 
 TIME_SINCE_FULL_CHARGE = {"value": 168723}
 TIME_TO_GO = {"value": 98400.0}
 # Venus's "no estimate" sentinel (~10 days) and the null it sends when idle.
 TIME_TO_GO_SENTINEL = {"value": 863999.9375}
 TIME_TO_GO_NULL = {"value": None}
+
+
+# --- Solar daily history -------------------------------------------------
+# Captured from a live GX (Venus OS v3.80, portal b827eb0cd27c) with one
+# MPPT, device instance 291, on 2026-10-15: `N/<portal>/solarcharger/291/
+# History/Daily/<0..30>/Yield` (kWh, newest first: 0 = today) plus
+# `History/Overall/DaysAvailable`. A fresh subscribe delivers all of them
+# at once (not as retained messages), and a `R/<portal>/keepalive` makes
+# Venus send them all again. Real zero-yield days (0.0) are in the data.
+SOLAR_DAYS_AVAILABLE = {"value": 31}
+SOLAR_YIELD_HISTORY_KWH = [
+    {"value": 0.20999999344348907},  # History/Daily/0/Yield
+    {"value": 0.18000000715255737},  # History/Daily/1/Yield
+    {"value": 0.1899999976158142},  # History/Daily/2/Yield
+    {"value": 0.14000000059604645},  # History/Daily/3/Yield
+    {"value": 0.1599999964237213},  # History/Daily/4/Yield
+    {"value": 0.12999999523162842},  # History/Daily/5/Yield
+    {"value": 0.009999999776482582},  # History/Daily/6/Yield
+    {"value": 0.0},  # History/Daily/7/Yield
+    {"value": 0.0},  # History/Daily/8/Yield
+    {"value": 0.0},  # History/Daily/9/Yield
+    {"value": 0.03999999910593033},  # History/Daily/10/Yield
+    {"value": 0.30000001192092896},  # History/Daily/11/Yield
+    {"value": 0.27000001072883606},  # History/Daily/12/Yield
+    {"value": 0.2199999988079071},  # History/Daily/13/Yield
+    {"value": 0.20000000298023224},  # History/Daily/14/Yield
+    {"value": 0.28999999165534973},  # History/Daily/15/Yield
+    {"value": 0.25999999046325684},  # History/Daily/16/Yield
+    {"value": 0.25999999046325684},  # History/Daily/17/Yield
+    {"value": 0.17000000178813934},  # History/Daily/18/Yield
+    {"value": 0.009999999776482582},  # History/Daily/19/Yield
+    {"value": 0.0},  # History/Daily/20/Yield
+    {"value": 0.0},  # History/Daily/21/Yield
+    {"value": 0.0},  # History/Daily/22/Yield
+    {"value": 0.0},  # History/Daily/23/Yield
+    {"value": 0.0},  # History/Daily/24/Yield
+    {"value": 0.0},  # History/Daily/25/Yield
+    {"value": 0.0},  # History/Daily/26/Yield
+    {"value": 0.0},  # History/Daily/27/Yield
+    {"value": 0.0},  # History/Daily/28/Yield
+    {"value": 0.0},  # History/Daily/29/Yield
+    {"value": 0.0},  # History/Daily/30/Yield
+]
