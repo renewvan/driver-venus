@@ -1,0 +1,1950 @@
+{
+ "N/PORTAL/battery/290/Alarms/Alarm": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/HighStarterVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/HighTemperature": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/HighVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/LowSoc": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/LowStarterVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/LowTemperature": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/LowVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Alarms/MidVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Capacity": {
+  "value": 314.0
+ },
+ "N/PORTAL/battery/290/Connected": {
+  "value": 1
+ },
+ "N/PORTAL/battery/290/ConsumedAmphours": {
+  "value": -16.399999618530273
+ },
+ "N/PORTAL/battery/290/CustomName": {
+  "value": "Van"
+ },
+ "N/PORTAL/battery/290/Dc/0/Current": {
+  "value": -7.800000190734863
+ },
+ "N/PORTAL/battery/290/Dc/0/MidVoltage": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/Dc/0/MidVoltageDeviation": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/Dc/0/Power": {
+  "value": -102.80400085449219
+ },
+ "N/PORTAL/battery/290/Dc/0/Temperature": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/Dc/0/Voltage": {
+  "value": 13.180000305175781
+ },
+ "N/PORTAL/battery/290/Dc/1/Voltage": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/DeviceInstance": {
+  "value": 290
+ },
+ "N/PORTAL/battery/290/Devices/0/CustomName": {
+  "value": "Van"
+ },
+ "N/PORTAL/battery/290/Devices/0/DeviceInstance": {
+  "value": 290
+ },
+ "N/PORTAL/battery/290/Devices/0/FirmwareVersion": {
+  "value": 1049
+ },
+ "N/PORTAL/battery/290/Devices/0/ProductId": {
+  "value": 49205
+ },
+ "N/PORTAL/battery/290/Devices/0/ProductName": {
+  "value": "SmartShunt IP65 500A/50mV"
+ },
+ "N/PORTAL/battery/290/Devices/0/ServiceName": {
+  "value": "com.victronenergy.battery.ttyUSB2"
+ },
+ "N/PORTAL/battery/290/Devices/0/VregLink": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/FirmwareVersion": {
+  "value": 1049
+ },
+ "N/PORTAL/battery/290/GroupId": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/HardwareVersion": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/History/AutomaticSyncs": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/History/AverageDischarge": {
+  "value": -140.89999389648438
+ },
+ "N/PORTAL/battery/290/History/ChargeCycles": {
+  "value": 2
+ },
+ "N/PORTAL/battery/290/History/ChargedEnergy": {
+  "value": 29.459999084472656
+ },
+ "N/PORTAL/battery/290/History/DeepestDischarge": {
+  "value": -168.3000030517578
+ },
+ "N/PORTAL/battery/290/History/DischargedEnergy": {
+  "value": 28.010000228881836
+ },
+ "N/PORTAL/battery/290/History/FullDischarges": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/History/HighStarterVoltageAlarms": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/History/HighVoltageAlarms": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/History/LastDischarge": {
+  "value": -16.299999237060547
+ },
+ "N/PORTAL/battery/290/History/LowStarterVoltageAlarms": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/History/LowVoltageAlarms": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/History/MaximumStarterVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/battery/290/History/MaximumVoltage": {
+  "value": 14.729999542236328
+ },
+ "N/PORTAL/battery/290/History/MinimumStarterVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/battery/290/History/MinimumVoltage": {
+  "value": 5.96999979019165
+ },
+ "N/PORTAL/battery/290/History/TimeSinceLastFullCharge": {
+  "value": 493393
+ },
+ "N/PORTAL/battery/290/History/TotalAhDrawn": {
+  "value": -2119.10009765625
+ },
+ "N/PORTAL/battery/290/Mgmt/Connection": {
+  "value": "USB"
+ },
+ "N/PORTAL/battery/290/Mgmt/ProcessName": {
+  "value": "vedirect-dbus"
+ },
+ "N/PORTAL/battery/290/Mgmt/ProcessVersion": {
+  "value": "3.92"
+ },
+ "N/PORTAL/battery/290/ProductId": {
+  "value": 49205
+ },
+ "N/PORTAL/battery/290/ProductName": {
+  "value": "SmartShunt IP65 500A/50mV"
+ },
+ "N/PORTAL/battery/290/Relay/0/State": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/Serial": {
+  "value": "REDACTED"
+ },
+ "N/PORTAL/battery/290/Settings/DischargeFloor": {
+  "value": 10.0
+ },
+ "N/PORTAL/battery/290/Settings/HasMidVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Settings/HasStarterVoltage": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Settings/HasTemperature": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/Settings/RelayMode": {
+  "value": null
+ },
+ "N/PORTAL/battery/290/Soc": {
+  "value": 95.5
+ },
+ "N/PORTAL/battery/290/TimeToGo": {
+  "value": 125879.9921875
+ },
+ "N/PORTAL/battery/290/VEDirect/HexChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/VEDirect/HexInvalidCharacterErrors": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/VEDirect/HexUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/VEDirect/TextChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/VEDirect/TextParseError": {
+  "value": 0
+ },
+ "N/PORTAL/battery/290/VEDirect/TextUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Ac/In/CurrentLimit": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Ac/In/L1/I": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Capabilities/Capabilities1": {
+  "value": 1086390524
+ },
+ "N/PORTAL/charger/289/Charger/MinCurrent": {
+  "value": 7.5
+ },
+ "N/PORTAL/charger/289/Connected": {
+  "value": 1
+ },
+ "N/PORTAL/charger/289/CustomName": {
+  "value": "Van Blue Smart"
+ },
+ "N/PORTAL/charger/289/Dc/0/Current": {
+  "value": 30.0
+ },
+ "N/PORTAL/charger/289/Dc/0/Temperature": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Dc/0/Voltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/charger/289/Dc/1/Current": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Dc/1/Voltage": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Dc/2/Current": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Dc/2/Voltage": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/DeviceInstance": {
+  "value": 289
+ },
+ "N/PORTAL/charger/289/DeviceOffReason": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Devices/0/CustomName": {
+  "value": "Van Blue Smart"
+ },
+ "N/PORTAL/charger/289/Devices/0/DeviceInstance": {
+  "value": 289
+ },
+ "N/PORTAL/charger/289/Devices/0/FirmwareVersion": {
+  "value": 223743
+ },
+ "N/PORTAL/charger/289/Devices/0/ProductId": {
+  "value": 41776
+ },
+ "N/PORTAL/charger/289/Devices/0/ProductName": {
+  "value": "Blue Smart IP22 Charger 12/30 (1)"
+ },
+ "N/PORTAL/charger/289/Devices/0/ServiceName": {
+  "value": "com.victronenergy.charger.ttyUSB1"
+ },
+ "N/PORTAL/charger/289/Devices/0/VregLink": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/ErrorCode": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/FirmwareVersion": {
+  "value": 223743
+ },
+ "N/PORTAL/charger/289/GroupId": {
+  "value": 40
+ },
+ "N/PORTAL/charger/289/HardwareVersion": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Link/BatteryCurrent": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Link/CurrentSenseActive": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Link/NetworkMode": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Link/NetworkStatus": {
+  "value": 4
+ },
+ "N/PORTAL/charger/289/Link/TemperatureSense": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Link/TemperatureSenseActive": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Link/VoltageSense": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Link/VoltageSenseActive": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/Mgmt/Connection": {
+  "value": "USB"
+ },
+ "N/PORTAL/charger/289/Mgmt/ProcessName": {
+  "value": "vedirect-dbus"
+ },
+ "N/PORTAL/charger/289/Mgmt/ProcessVersion": {
+  "value": "3.92"
+ },
+ "N/PORTAL/charger/289/NrOfOutputs": {
+  "value": 1
+ },
+ "N/PORTAL/charger/289/ProductId": {
+  "value": 41776
+ },
+ "N/PORTAL/charger/289/ProductName": {
+  "value": "Blue Smart IP22 Charger 12/30 (1)"
+ },
+ "N/PORTAL/charger/289/Relay/0/State": {
+  "value": null
+ },
+ "N/PORTAL/charger/289/Serial": {
+  "value": "REDACTED"
+ },
+ "N/PORTAL/charger/289/Settings/ChargeCurrentLimit": {
+  "value": 30.0
+ },
+ "N/PORTAL/charger/289/State": {
+  "value": 3
+ },
+ "N/PORTAL/charger/289/VEDirect/HexChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/VEDirect/HexInvalidCharacterErrors": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/VEDirect/HexUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/VEDirect/TextChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/VEDirect/TextParseError": {
+  "value": 0
+ },
+ "N/PORTAL/charger/289/VEDirect/TextUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Capabilities/Capabilities1": {
+  "value": 134868854
+ },
+ "N/PORTAL/solarcharger/291/Connected": {
+  "value": 1
+ },
+ "N/PORTAL/solarcharger/291/CustomName": {
+  "value": "Van"
+ },
+ "N/PORTAL/solarcharger/291/Dc/0/Current": {
+  "value": 0.5
+ },
+ "N/PORTAL/solarcharger/291/Dc/0/Voltage": {
+  "value": 13.1899995803833
+ },
+ "N/PORTAL/solarcharger/291/DeviceInstance": {
+  "value": 291
+ },
+ "N/PORTAL/solarcharger/291/DeviceOffReason": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/CustomName": {
+  "value": "Van"
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/DeviceInstance": {
+  "value": 291
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/FirmwareVersion": {
+  "value": 372
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/ProductId": {
+  "value": 41046
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/ProductName": {
+  "value": "SmartSolar Charger MPPT 100/30"
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/ServiceName": {
+  "value": "com.victronenergy.solarcharger.ttyUSB3"
+ },
+ "N/PORTAL/solarcharger/291/Devices/0/VregLink": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/ErrorCode": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/FirmwareVersion": {
+  "value": 372
+ },
+ "N/PORTAL/solarcharger/291/GroupId": {
+  "value": 10
+ },
+ "N/PORTAL/solarcharger/291/HardwareVersion": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/MaxBatteryCurrent": {
+  "value": 0.5
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/MaxPower": {
+  "value": 7.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/MaxPvVoltage": {
+  "value": 44.189998626708984
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/MinBatteryVoltage": {
+  "value": 13.180000305175781
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/Nr": {
+  "value": 174
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/TimeInBulk": {
+  "value": 48.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/0/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/MaxBatteryCurrent": {
+  "value": 9.800000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/MaxBatteryVoltage": {
+  "value": 13.569999694824219
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/MaxPower": {
+  "value": 136.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/MaxPvVoltage": {
+  "value": 52.599998474121094
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/Nr": {
+  "value": 173
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/TimeInBulk": {
+  "value": 637.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/1/Yield": {
+  "value": 0.20999999344348907
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/MaxBatteryCurrent": {
+  "value": 0.4000000059604645
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/MaxPower": {
+  "value": 6.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/MaxPvVoltage": {
+  "value": 56.470001220703125
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/Nr": {
+  "value": 164
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/TimeInBulk": {
+  "value": 47.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/TimeInFloat": {
+  "value": 441.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/10/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/MaxBatteryCurrent": {
+  "value": 4.5
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/MaxPower": {
+  "value": 63.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/MaxPvVoltage": {
+  "value": 56.02000045776367
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/Nr": {
+  "value": 163
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/TimeInBulk": {
+  "value": 101.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/TimeInFloat": {
+  "value": 395.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/11/Yield": {
+  "value": 0.03999999910593033
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/MaxBatteryCurrent": {
+  "value": 9.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/MaxBatteryVoltage": {
+  "value": 14.109999656677246
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/MaxPower": {
+  "value": 125.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/MaxPvVoltage": {
+  "value": 50.650001525878906
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/Nr": {
+  "value": 162
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/TimeInBulk": {
+  "value": 591.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/12/Yield": {
+  "value": 0.30000001192092896
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/MaxBatteryCurrent": {
+  "value": 9.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/MaxBatteryVoltage": {
+  "value": 14.039999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/MaxPower": {
+  "value": 127.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/MaxPvVoltage": {
+  "value": 50.83000183105469
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/Nr": {
+  "value": 161
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/TimeInBulk": {
+  "value": 611.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/13/Yield": {
+  "value": 0.27000001072883606
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/MaxBatteryCurrent": {
+  "value": 10.899999618530273
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/MaxBatteryVoltage": {
+  "value": 14.0600004196167
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/MaxPower": {
+  "value": 151.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/MaxPvVoltage": {
+  "value": 52.54999923706055
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/Nr": {
+  "value": 160
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/TimeInBulk": {
+  "value": 607.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/14/Yield": {
+  "value": 0.2199999988079071
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/MaxBatteryCurrent": {
+  "value": 3.799999952316284
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/MaxBatteryVoltage": {
+  "value": 14.010000228881836
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/MaxPower": {
+  "value": 53.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/MaxPvVoltage": {
+  "value": 46.38999938964844
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/Nr": {
+  "value": 159
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/TimeInBulk": {
+  "value": 500.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/15/Yield": {
+  "value": 0.20000000298023224
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/MaxBatteryCurrent": {
+  "value": 6.599999904632568
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/MaxBatteryVoltage": {
+  "value": 14.029999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/MaxPower": {
+  "value": 91.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/MaxPvVoltage": {
+  "value": 50.66999816894531
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/Nr": {
+  "value": 158
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/TimeInBulk": {
+  "value": 560.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/16/Yield": {
+  "value": 0.28999999165534973
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/MaxBatteryCurrent": {
+  "value": 9.899999618530273
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/MaxBatteryVoltage": {
+  "value": 14.029999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/MaxPower": {
+  "value": 137.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/MaxPvVoltage": {
+  "value": 52.2400016784668
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/Nr": {
+  "value": 157
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/TimeInBulk": {
+  "value": 550.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/17/Yield": {
+  "value": 0.25999999046325684
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/MaxBatteryCurrent": {
+  "value": 9.300000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/MaxBatteryVoltage": {
+  "value": 14.020000457763672
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/MaxPower": {
+  "value": 129.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/MaxPvVoltage": {
+  "value": 51.68000030517578
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/Nr": {
+  "value": 156
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/TimeInBulk": {
+  "value": 552.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/18/Yield": {
+  "value": 0.25999999046325684
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/MaxBatteryCurrent": {
+  "value": 9.600000381469727
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/MaxBatteryVoltage": {
+  "value": 14.029999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/MaxPower": {
+  "value": 132.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/MaxPvVoltage": {
+  "value": 51.119998931884766
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/Nr": {
+  "value": 155
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/TimeInBulk": {
+  "value": 480.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/19/Yield": {
+  "value": 0.17000000178813934
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/MaxBatteryCurrent": {
+  "value": 5.800000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/MaxBatteryVoltage": {
+  "value": 14.210000038146973
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/MaxPower": {
+  "value": 80.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/MaxPvVoltage": {
+  "value": 53.22999954223633
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/MinBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/Nr": {
+  "value": 172
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/TimeInBulk": {
+  "value": 349.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/TimeInFloat": {
+  "value": 170.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/2/Yield": {
+  "value": 0.18000000715255737
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/MaxBatteryCurrent": {
+  "value": 1.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/MaxBatteryVoltage": {
+  "value": 13.84000015258789
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/MaxPower": {
+  "value": 9.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/MaxPvVoltage": {
+  "value": 56.84000015258789
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/MinBatteryVoltage": {
+  "value": 0.5799999833106995
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/Nr": {
+  "value": 154
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/TimeInBulk": {
+  "value": 80.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/TimeInFloat": {
+  "value": 582.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/20/Yield": {
+  "value": 0.009999999776482582
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/MaxBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/MaxPvVoltage": {
+  "value": 57.38999938964844
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/MinBatteryVoltage": {
+  "value": 13.25
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/Nr": {
+  "value": 153
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/TimeInFloat": {
+  "value": 710.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/21/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/MaxBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/MaxPvVoltage": {
+  "value": 55.4900016784668
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/MinBatteryVoltage": {
+  "value": 13.260000228881836
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/Nr": {
+  "value": 152
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/TimeInFloat": {
+  "value": 699.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/22/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/MaxPvVoltage": {
+  "value": 57.59000015258789
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/MinBatteryVoltage": {
+  "value": 13.260000228881836
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/Nr": {
+  "value": 151
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/TimeInFloat": {
+  "value": 722.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/23/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/MaxPvVoltage": {
+  "value": 57.38999938964844
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/MinBatteryVoltage": {
+  "value": 13.260000228881836
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/Nr": {
+  "value": 150
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/TimeInFloat": {
+  "value": 715.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/24/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/MaxPvVoltage": {
+  "value": 56.02000045776367
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/MinBatteryVoltage": {
+  "value": 13.270000457763672
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/Nr": {
+  "value": 149
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/TimeInFloat": {
+  "value": 722.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/25/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/MaxPvVoltage": {
+  "value": 56.029998779296875
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/MinBatteryVoltage": {
+  "value": 13.270000457763672
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/Nr": {
+  "value": 148
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/TimeInFloat": {
+  "value": 717.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/26/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/MaxBatteryVoltage": {
+  "value": 13.289999961853027
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/MaxPvVoltage": {
+  "value": 57.0099983215332
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/MinBatteryVoltage": {
+  "value": 13.270000457763672
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/Nr": {
+  "value": 147
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/TimeInFloat": {
+  "value": 720.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/27/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/MaxBatteryVoltage": {
+  "value": 13.300000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/MaxPvVoltage": {
+  "value": 57.31999969482422
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/Nr": {
+  "value": 146
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/TimeInFloat": {
+  "value": 723.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/28/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/MaxBatteryVoltage": {
+  "value": 13.300000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/MaxPvVoltage": {
+  "value": 56.97999954223633
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/MinBatteryVoltage": {
+  "value": 13.270000457763672
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/Nr": {
+  "value": 145
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/TimeInFloat": {
+  "value": 734.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/29/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/MaxBatteryCurrent": {
+  "value": 5.699999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/MaxPower": {
+  "value": 80.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/MaxPvVoltage": {
+  "value": 53.65999984741211
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/Nr": {
+  "value": 171
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/TimeInBulk": {
+  "value": 344.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/TimeInFloat": {
+  "value": 174.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/3/Yield": {
+  "value": 0.1899999976158142
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/MaxBatteryCurrent": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/MaxBatteryVoltage": {
+  "value": 13.300000190734863
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/MaxPower": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/MaxPvVoltage": {
+  "value": 56.189998626708984
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/Nr": {
+  "value": 144
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/TimeInFloat": {
+  "value": 730.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/30/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/MaxBatteryCurrent": {
+  "value": 8.899999618530273
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/MaxBatteryVoltage": {
+  "value": 13.59000015258789
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/MaxPower": {
+  "value": 124.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/MaxPvVoltage": {
+  "value": 54.09000015258789
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/Nr": {
+  "value": 170
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/TimeInAbsorption": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/TimeInBulk": {
+  "value": 651.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/TimeInFloat": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/4/Yield": {
+  "value": 0.14000000059604645
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/MaxBatteryCurrent": {
+  "value": 8.699999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/MaxPower": {
+  "value": 121.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/MaxPvVoltage": {
+  "value": 55.70000076293945
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/Nr": {
+  "value": 169
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/TimeInBulk": {
+  "value": 313.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/TimeInFloat": {
+  "value": 203.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/5/Yield": {
+  "value": 0.1599999964237213
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/MaxBatteryCurrent": {
+  "value": 5.699999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/MaxPower": {
+  "value": 80.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/MaxPvVoltage": {
+  "value": 56.41999816894531
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/MinBatteryVoltage": {
+  "value": 13.279999732971191
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/Nr": {
+  "value": 168
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/TimeInBulk": {
+  "value": 318.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/TimeInFloat": {
+  "value": 176.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/6/Yield": {
+  "value": 0.12999999523162842
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/MaxBatteryCurrent": {
+  "value": 0.30000001192092896
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/MaxPower": {
+  "value": 4.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/MaxPvVoltage": {
+  "value": 56.47999954223633
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/Nr": {
+  "value": 167
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/TimeInBulk": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/TimeInFloat": {
+  "value": 466.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/7/Yield": {
+  "value": 0.009999999776482582
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/MaxBatteryCurrent": {
+  "value": 0.30000001192092896
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/MaxBatteryVoltage": {
+  "value": 14.210000038146973
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/MaxPower": {
+  "value": 2.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/MaxPvVoltage": {
+  "value": 54.810001373291016
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/Nr": {
+  "value": 166
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/TimeInBulk": {
+  "value": 2.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/TimeInFloat": {
+  "value": 311.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/8/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/Consumption": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/MaxBatteryCurrent": {
+  "value": 0.5
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/MaxBatteryVoltage": {
+  "value": 14.199999809265137
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/MaxPower": {
+  "value": 5.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/MaxPvVoltage": {
+  "value": 55.970001220703125
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/Nr": {
+  "value": 165
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/TimeInAbsorption": {
+  "value": 120.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/TimeInBulk": {
+  "value": 2.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/TimeInFloat": {
+  "value": 504.0
+ },
+ "N/PORTAL/solarcharger/291/History/Daily/9/Yield": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/DaysAvailable": {
+  "value": 31
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/LastError1": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/LastError2": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/LastError3": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/LastError4": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/MaxBatteryVoltage": {
+  "value": 15.119999885559082
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/MaxPvVoltage": {
+  "value": 58.68000030517578
+ },
+ "N/PORTAL/solarcharger/291/History/Overall/MinBatteryVoltage": {
+  "value": 0.0
+ },
+ "N/PORTAL/solarcharger/291/Link/BatteryCurrent": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/Link/ChargeCurrent": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/Link/ChargeVoltage": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/Link/NetworkMode": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Link/NetworkStatus": {
+  "value": 4
+ },
+ "N/PORTAL/solarcharger/291/Link/TemperatureSense": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/Link/TemperatureSenseActive": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Link/VoltageSense": {
+  "value": null
+ },
+ "N/PORTAL/solarcharger/291/Link/VoltageSenseActive": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Load/State": {
+  "value": 1
+ },
+ "N/PORTAL/solarcharger/291/Mgmt/Connection": {
+  "value": "USB"
+ },
+ "N/PORTAL/solarcharger/291/Mgmt/ProcessName": {
+  "value": "vedirect-dbus"
+ },
+ "N/PORTAL/solarcharger/291/Mgmt/ProcessVersion": {
+  "value": "3.92"
+ },
+ "N/PORTAL/solarcharger/291/Mode": {
+  "value": 1
+ },
+ "N/PORTAL/solarcharger/291/MppOperationMode": {
+  "value": 2
+ },
+ "N/PORTAL/solarcharger/291/NrOfTrackers": {
+  "value": 1
+ },
+ "N/PORTAL/solarcharger/291/ProductId": {
+  "value": 41046
+ },
+ "N/PORTAL/solarcharger/291/ProductName": {
+  "value": "SmartSolar Charger MPPT 100/30"
+ },
+ "N/PORTAL/solarcharger/291/Pv/V": {
+  "value": 46.70000076293945
+ },
+ "N/PORTAL/solarcharger/291/Serial": {
+  "value": "REDACTED"
+ },
+ "N/PORTAL/solarcharger/291/Settings/BatteryVoltageSetting": {
+  "value": 12
+ },
+ "N/PORTAL/solarcharger/291/Settings/BmsPresent": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Settings/ChargeCurrentLimit": {
+  "value": 30.0
+ },
+ "N/PORTAL/solarcharger/291/State": {
+  "value": 3
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/HexChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/HexInvalidCharacterErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/HexUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/TextChecksumErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/TextParseError": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/VEDirect/TextUnfinishedErrors": {
+  "value": 0
+ },
+ "N/PORTAL/solarcharger/291/Yield/Power": {
+  "value": 7.0
+ },
+ "N/PORTAL/solarcharger/291/Yield/System": {
+  "value": 172.3800048828125
+ },
+ "N/PORTAL/solarcharger/291/Yield/User": {
+  "value": 36.0
+ },
+ "N/PORTAL/system/0/Batteries": {
+  "value": [
+   {
+    "active_battery_service": true,
+    "current": -8.0,
+    "id": "com.victronenergy.battery.ttyUSB2",
+    "instance": 290,
+    "name": "Van SmartShunt",
+    "power": -105.44000244140625,
+    "soc": 95.5,
+    "state": 2,
+    "timetogo": 125819.9921875,
+    "voltage": 13.180000305175781
+   }
+  ]
+ },
+ "N/PORTAL/system/0/SystemState/State": {
+  "value": 0
+ }
+}

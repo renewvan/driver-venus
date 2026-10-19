@@ -1,7 +1,8 @@
 """Persistent MQTT connection to the renewvan bus with LWT and a
 retained-topic publish helper. Same shape as the other renewvan/node-*
 publishers, plus clearing a retained topic when the source reading goes
-invalid.
+invalid, and the retained Node info published on every connect just before
+`online`.
 """
 
 from __future__ import annotations
@@ -18,11 +19,14 @@ logger = logging.getLogger(__name__)
 # 3 segments, not 4: liveness for the whole node, so it cannot be mistaken
 # for an entity keyed by a fake `health` id.
 HEALTH_TOPIC = "renewvan/venus/health"
+# Retained Node info, same 3-segment shape; see hub schema/node-info.schema.json.
+INFO_TOPIC = "renewvan/venus/info"
 
 
 class Publisher:
-    def __init__(self, config: MqttConfig) -> None:
+    def __init__(self, config: MqttConfig, info: str) -> None:
         self._config = config
+        self._info = info
         self._client = mqtt.Client(client_id="node-venus", clean_session=False)
         if config.username:
             self._client.username_pw_set(config.username, config.password)
@@ -35,6 +39,9 @@ class Publisher:
             logger.info(
                 "Connected to renewvan-bus MQTT broker %s:%s", self._config.host, self._config.port
             )
+            # Info first, then online: a consumer that sees online always finds info
+            # retained. Never cleared on offline or by the will ("last seen vX").
+            client.publish(INFO_TOPIC, payload=self._info, qos=1, retain=True)
             client.publish(HEALTH_TOPIC, payload="online", qos=1, retain=True)
         else:
             logger.error("Renewvan-bus MQTT connect failed with rc=%s", rc)
