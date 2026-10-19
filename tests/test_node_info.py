@@ -6,6 +6,8 @@ import pytest
 import node_venus.node_info as node_info
 from node_venus.node_info import build_info, load_node_info, read_host_serial
 
+REPO_MANIFEST = json.loads((Path(__file__).resolve().parent.parent / "manifest.json").read_text())
+
 MANIFEST = {
     "node": "venus",
     "product": "Test product",
@@ -77,20 +79,14 @@ def test_available_serial_is_published_as_is(tmp_path: Path) -> None:
 
 def test_default_manifest_is_the_repo_root_file_in_a_checkout() -> None:
     info = json.loads(build_info("v1", None))
-    repo_manifest = json.loads(
-        (Path(__file__).resolve().parent.parent / "manifest.json").read_text()
-    )
-    assert info == {**repo_manifest, "version": "v1"}
+    assert info == {**REPO_MANIFEST, "version": "v1"}
 
 
 def test_repo_manifest_describes_the_venus_node() -> None:
-    repo_manifest = json.loads(
-        (Path(__file__).resolve().parent.parent / "manifest.json").read_text()
-    )
-    assert repo_manifest["node"] == "venus"
-    assert repo_manifest["publishes"] == ["battery", "solar", "charger"]
-    assert "version" not in repo_manifest
-    assert "host_serial" not in repo_manifest
+    assert REPO_MANIFEST["node"] == "venus"
+    assert REPO_MANIFEST["publishes"] == ["battery", "solar", "charger"]
+    assert "version" not in REPO_MANIFEST
+    assert "host_serial" not in REPO_MANIFEST
 
 
 def test_manifest_beside_the_module_wins_over_the_repo_root(
@@ -107,14 +103,6 @@ def test_manifest_beside_the_module_wins_over_the_repo_root(
 
     beside.unlink()  # a checkout run has no copy beside the module
     assert json.loads(build_info("v1", None))["product"] == "Repo root"
-
-
-def test_production_lookup_prefers_the_copy_beside_the_module() -> None:
-    package_dir = Path(node_info.__file__).resolve().parent
-    assert node_info.MANIFEST_PATHS == (
-        package_dir / "manifest.json",  # copied in by the image build
-        package_dir.parent / "manifest.json",  # repo root, for a checkout run
-    )
 
 
 def test_load_node_info_stamps_version_from_node_version_env(

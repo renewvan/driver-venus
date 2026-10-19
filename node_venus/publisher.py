@@ -1,7 +1,8 @@
 """Persistent MQTT connection to the renewvan bus with LWT and a
 retained-topic publish helper. Same shape as the other renewvan/node-*
 publishers, plus clearing a retained topic when the source reading goes
-invalid.
+invalid, and the retained Node info published on every connect just before
+`online`.
 """
 
 from __future__ import annotations
