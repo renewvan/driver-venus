@@ -1,6 +1,8 @@
 [project]
 name = "node-venus"
-version = "0.1.0"
+# Fixed placeholder: nothing reads this. The git release tag is the only version
+# source (stamped into the image as NODE_VERSION).
+version = "0.0.0"
 description = "Victron Venus OS MQTT -> renewvan bus node (battery, solar, charger)"
 requires-python = ">=3.11"
 dependencies = [

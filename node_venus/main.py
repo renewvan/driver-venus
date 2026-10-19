@@ -7,6 +7,7 @@ import argparse
 import logging
 
 from node_venus.config import load_config
+from node_venus.node_info import load_node_info
 from node_venus.publisher import Publisher
 from node_venus.subscriber import Subscriber
 
@@ -24,7 +25,9 @@ def main() -> None:
     )
 
     config = load_config()
-    publisher = Publisher(config.mqtt)
+    # Version is stamped by the release build (NODE_VERSION); unset reports "dev".
+    # Host serial is read once, here, at process start.
+    publisher = Publisher(config.mqtt, load_node_info())
     publisher.connect()
     subscriber = Subscriber(config, publisher)
     try:
