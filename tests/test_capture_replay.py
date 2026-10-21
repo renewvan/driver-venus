@@ -7,7 +7,7 @@ redacted in the capture.
 import json
 from pathlib import Path
 
-from node_venus.mapping import map_service_message, split_service_topic
+from driver_venus.mapping import map_service_message, split_service_topic
 
 CAPTURE = Path(__file__).parent / "fixtures" / "venus_capture_2026-10-16.json"
 PORTAL = "PORTAL"

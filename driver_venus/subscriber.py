@@ -21,15 +21,15 @@ import time
 
 import paho.mqtt.client as mqtt
 
-from node_venus.config import AppConfig
-from node_venus.mapping import (
+from driver_venus.config import AppConfig
+from driver_venus.mapping import (
     SolarYieldHistory,
     map_batteries,
     map_charge_state,
     map_service_message,
     split_service_topic,
 )
-from node_venus.publisher import Publisher
+from driver_venus.publisher import Publisher
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class Subscriber:
         self._history_lock = threading.Lock()
         self._history_timer: threading.Timer | None = None
 
-        self._client = mqtt.Client(client_id="node-venus-source", clean_session=False)
+        self._client = mqtt.Client(client_id="driver-venus-source", clean_session=False)
         self._client.reconnect_delay_set(min_delay=1, max_delay=30)
         self._client.on_connect = self._on_connect
         self._client.on_message = self._on_message

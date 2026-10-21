@@ -2,7 +2,7 @@
 No network, no MQTT client — this is the seam unit-tested against fixture
 payloads.
 
-Venus publishes two shapes this node cares about:
+Venus publishes two shapes this device cares about:
 
 - **Aggregates** — `N/<portal>/system/0/Batteries` (one JSON array element
   per battery service) and `N/<portal>/system/0/SystemState/State` (one
@@ -13,7 +13,7 @@ Venus publishes two shapes this node cares about:
 
 Entity ids are the Venus **device instance** (a stable per-device number,
 e.g. `290`), never the user-editable `name` and never a static map: an
-open-source node cannot know which instances a given van has.
+open-source device cannot know which instances a given van has.
 
 A `None` value in a returned `(topic, value)` pair means "clear this
 retained topic" (Venus sends `null` when a reading stops being valid, e.g.
@@ -218,7 +218,7 @@ def map_batteries(payload: dict) -> list[tuple[str, object]]:
 def map_charge_state(payload: dict, entity_ids: list[str]) -> list[tuple[str, object]]:
     """Map a decoded `SystemState/State` payload to a battery
     `charge_state` per known battery id. The system state is one
-    system-wide value, fanned out to every battery id the node has seen."""
+    system-wide value, fanned out to every battery id the device has seen."""
     value = payload.get("value")
     if value is None:
         return [(entity_topic("battery", i, "charge_state"), None) for i in entity_ids]

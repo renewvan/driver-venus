@@ -4,7 +4,7 @@ broker or GX device required.
 
 import pytest
 
-from node_venus.mapping import (
+from driver_venus.mapping import (
     SolarYieldHistory,
     map_batteries,
     map_charge_state,

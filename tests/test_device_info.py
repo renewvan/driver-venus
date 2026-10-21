@@ -3,18 +3,18 @@ from pathlib import Path
 
 import pytest
 
-import node_venus.node_info as node_info
-from node_venus.node_info import build_info, load_node_info, read_host_serial
+import driver_venus.device_info as device_info
+from driver_venus.device_info import build_info, load_device_info, read_board_serial
 
 REPO_MANIFEST = json.loads((Path(__file__).resolve().parent.parent / "manifest.json").read_text())
 
 MANIFEST = {
-    "node": "venus",
+    "device": "venus",
     "product": "Test product",
     "source": "Test source",
     "publishes": ["battery", "solar", "charger"],
     "manufacturer": "Acme",
-    "homepage": "https://example.com/node",
+    "homepage": "https://example.com/device",
 }
 
 
@@ -51,30 +51,30 @@ PI_CPUINFO = (
 )
 
 
-def test_host_serial_is_the_serial_line_of_cpuinfo(tmp_path: Path) -> None:
-    assert read_host_serial(write_cpuinfo(tmp_path, PI_CPUINFO)) == "00000000a1b2c3d4"
+def test_board_serial_is_the_serial_line_of_cpuinfo(tmp_path: Path) -> None:
+    assert read_board_serial(write_cpuinfo(tmp_path, PI_CPUINFO)) == "00000000a1b2c3d4"
 
 
-def test_host_serial_omitted_when_unavailable(tmp_path: Path) -> None:
+def test_board_serial_omitted_when_unavailable(tmp_path: Path) -> None:
     no_serial = "processor\t: 0\nmodel name\t: x86\n"
     empty = "processor\t: 0\nSerial\t\t: \n"
     all_zero = "processor\t: 0\nSerial\t\t: 0000000000000000\n"
     for text in (no_serial, empty, all_zero):
-        assert read_host_serial(write_cpuinfo(tmp_path, text)) is None
-    assert read_host_serial(tmp_path / "does-not-exist") is None
+        assert read_board_serial(write_cpuinfo(tmp_path, text)) is None
+    assert read_board_serial(tmp_path / "does-not-exist") is None
 
 
 def test_unavailable_serial_is_absent_from_info_not_a_placeholder(tmp_path: Path) -> None:
     info = json.loads(
-        build_info("v1", read_host_serial(tmp_path / "nope"), write_manifest(tmp_path))
+        build_info("v1", read_board_serial(tmp_path / "nope"), write_manifest(tmp_path))
     )
-    assert "host_serial" not in info
+    assert "board_serial" not in info
 
 
 def test_available_serial_is_published_as_is(tmp_path: Path) -> None:
-    serial = read_host_serial(write_cpuinfo(tmp_path, PI_CPUINFO))
+    serial = read_board_serial(write_cpuinfo(tmp_path, PI_CPUINFO))
     info = json.loads(build_info("v1", serial, write_manifest(tmp_path)))
-    assert info["host_serial"] == "00000000a1b2c3d4"
+    assert info["board_serial"] == "00000000a1b2c3d4"
 
 
 def test_default_manifest_is_the_repo_root_file_in_a_checkout() -> None:
@@ -82,11 +82,11 @@ def test_default_manifest_is_the_repo_root_file_in_a_checkout() -> None:
     assert info == {**REPO_MANIFEST, "version": "v1"}
 
 
-def test_repo_manifest_describes_the_venus_node() -> None:
-    assert REPO_MANIFEST["node"] == "venus"
+def test_repo_manifest_describes_the_venus_device() -> None:
+    assert REPO_MANIFEST["device"] == "venus"
     assert REPO_MANIFEST["publishes"] == ["battery", "solar", "charger"]
     assert "version" not in REPO_MANIFEST
-    assert "host_serial" not in REPO_MANIFEST
+    assert "board_serial" not in REPO_MANIFEST
 
 
 def test_manifest_beside_the_module_wins_over_the_repo_root(
@@ -98,26 +98,26 @@ def test_manifest_beside_the_module_wins_over_the_repo_root(
     root = root_dir / "manifest.json"
     root.write_text(json.dumps({**MANIFEST, "product": "Repo root"}))
 
-    monkeypatch.setattr(node_info, "MANIFEST_PATHS", (beside, root))
+    monkeypatch.setattr(device_info, "MANIFEST_PATHS", (beside, root))
     assert json.loads(build_info("v1", None))["product"] == "Image copy"
 
     beside.unlink()  # a checkout run has no copy beside the module
     assert json.loads(build_info("v1", None))["product"] == "Repo root"
 
 
-def test_load_node_info_stamps_version_from_node_version_env(
+def test_load_device_info_stamps_version_from_device_version_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     for env, expected in (("v4.5.6", "v4.5.6"), (None, "dev"), ("", "dev")):
         if env is None:
-            monkeypatch.delenv("NODE_VERSION", raising=False)
+            monkeypatch.delenv("DEVICE_VERSION", raising=False)
         else:
-            monkeypatch.setenv("NODE_VERSION", env)
-        assert json.loads(load_node_info())["version"] == expected
+            monkeypatch.setenv("DEVICE_VERSION", env)
+        assert json.loads(load_device_info())["version"] == expected
 
 
-def test_load_node_info_reads_the_host_serial_from_cpuinfo(
+def test_load_device_info_reads_the_board_serial_from_cpuinfo(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(node_info, "CPUINFO_PATH", write_cpuinfo(tmp_path, PI_CPUINFO))
-    assert json.loads(load_node_info())["host_serial"] == "00000000a1b2c3d4"
+    monkeypatch.setattr(device_info, "CPUINFO_PATH", write_cpuinfo(tmp_path, PI_CPUINFO))
+    assert json.loads(load_device_info())["board_serial"] == "00000000a1b2c3d4"

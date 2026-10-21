@@ -1,4 +1,4 @@
-# node-venus
+# driver-venus
 
 Victron Venus OS MQTT → renewvan bus. Bridges everything a Venus OS device
 (Cerbo GX, Raspberry Pi running Venus OS, …) already knows about the van's
@@ -6,8 +6,8 @@ power system onto the vendor-neutral `battery`, `solar` and `charger`
 entities from `hub`'s `schema/`. No new sensing, just a topic remap of an
 existing feed.
 
-Use this node **if the van already runs Venus OS**. A van without a GX
-device reads its hardware directly with a different node; both publish the
+Use this device **if the van already runs Venus OS**. A van without a GX
+device reads its hardware directly with a different device; both publish the
 same entities, so nothing downstream cares which one is in use. See
 `hub/docs/adr/0008-node-naming-and-entity-neutrality.md`.
 
@@ -19,16 +19,16 @@ same entities, so nothing downstream cares which one is in use. See
   the process and a `R/<portalId>/keepalive` is sent on connect and every
   30 s so slow-changing values (a full battery's SoC) still appear.
 - **Renewvan bus** (publish only, retained): `renewvan/<entity>/<id>/*`, plus
-  node liveness on `renewvan/venus/health` (`online`/`offline` via MQTT
+  device liveness on `renewvan/venus/health` (`online`/`offline` via MQTT
   LWT) — deliberately 3 segments, not 4, so it can't be mistaken for an
   entity keyed by a fake `health` id.
-- **Node info** (retained): `renewvan/venus/info`, one JSON message
-  describing this node (see [Node info](#node-info)). Published on **every
+- **Device info** (retained): `renewvan/venus/info`, one JSON message
+  describing this device (see [Device info](#device-info)). Published on **every
   connect, immediately before `online`**, so a consumer that sees `online`
   always finds info already retained. It is **never cleared**: it stays
-  retained when the node goes offline or its last will fires, so a consumer
+  retained when the device goes offline or its last will fires, so a consumer
   can say "offline, last seen vX". Payload shape: `hub`'s
-  `schema/node-info.schema.json`.
+  `schema/device-info.schema.json`.
 
 ## Ids
 
@@ -65,7 +65,7 @@ that stopped being valid does not linger on the bus.
 day slot (`History/Daily/0..30/Yield`, kWh, slot 0 = today) and the slot count
 in `History/Overall/DaysAvailable`. A fresh subscribe delivers every slot at
 once and each `R/<portal>/keepalive` makes Venus send them all again, so the
-node folds them into one `yield_history_wh` array (the only stateful part of
+device folds them into one `yield_history_wh` array (the only stateful part of
 the mapping, `SolarYieldHistory`). The array is published after the burst of
 slot messages has been quiet for 2 s, and only when it is complete (every slot
 `DaysAvailable` promises has been re-received since the last publish) and
@@ -74,14 +74,14 @@ at the day rollover (a burst that stalls waits for the rest), and not again on
 every keepalive. `DaysAvailable` of 0 publishes nothing. A controller with fewer days logged publishes a shorter
 array. Decision and reasoning: `hub` `docs/adr/0009`.
 
-The mapping is pure (`node_venus/mapping.py`, no network/MQTT client) and is
+The mapping is pure (`driver_venus/mapping.py`, no network/MQTT client) and is
 what `tests/test_mapping.py` exercises against fixture Venus payloads, no
 broker or GX device required. Fixtures marked as captured are real payloads
 from a Venus OS device with a SmartShunt, an MPPT and an Orion DC-DC charger.
 
 ## Configuration
 
-Environment variables (matches `hub`'s `docker-compose.yml` `node-venus:`
+Environment variables (matches `hub`'s `docker-compose.yml` `driver-venus:`
 service block):
 
 | Variable | Default | Notes |
@@ -98,7 +98,7 @@ service block):
 
 ```bash
 pip install -r requirements.txt
-VENUS_MQTT_HOST=192.168.1.50 VENUS_PORTAL_ID=abc123 python -m node_venus.main
+VENUS_MQTT_HOST=192.168.1.50 VENUS_PORTAL_ID=abc123 python -m driver_venus.main
 ```
 
 ## Testing
@@ -111,51 +111,51 @@ pytest tests/ -v
 ## Releasing
 
 Tagging a GitHub release builds and publishes
-`ghcr.io/<owner>/node-venus:<tag>`, which `hub`'s deployment compose
+`ghcr.io/<owner>/driver-venus:<tag>`, which `hub`'s deployment compose
 file pins by tag (never builds from source — see
 `hub/docs/adr/0001-compose-services-via-pinned-images-not-git-submodules.md`).
 
-The release workflow passes the tag as the `NODE_VERSION` build argument, which
-the Dockerfile promotes to an environment variable the node reads (see
-[Node info](#node-info)). Nothing else carries a version.
+The release workflow passes the tag as the `DEVICE_VERSION` build argument, which
+the Dockerfile promotes to an environment variable the device reads (see
+[Device info](#device-info)). Nothing else carries a version.
 
-## Node info
+## Device info
 
-The node describes itself to the dashboard with a manifest plus two runtime
-values. Contract: `hub`'s `schema/node-info.schema.json` (decision record:
+The device describes itself to the dashboard with a manifest plus two runtime
+values. Contract: `hub`'s `schema/device-info.schema.json` (decision record:
 `hub/docs/adr/0011-node-manifest-and-retained-info-topic.md`).
 
 **`manifest.json`** (repo root) is the single source of the static fields:
-`node` (`venus`, the topic key, same as `renewvan/venus/health`), `product`,
-`source`, `publishes` (`battery`, `solar`, `charger`: one node, three entity
-types, which is how the dashboard attributes those instances to this node) and
-optional `manufacturer` / `homepage`. `version` and `host_serial` are
+`device` (`venus`, the topic key, same as `renewvan/venus/health`), `product`,
+`source`, `publishes` (`battery`, `solar`, `charger`: one device, three entity
+types, which is how the dashboard attributes those instances to this device) and
+optional `manufacturer` / `homepage`. `version` and `board_serial` are
 **forbidden** in it. The image build copies it beside the module
-(`node_venus/manifest.json`); the node reads that copy first and falls back to
+(`driver_venus/manifest.json`); the device reads that copy first and falls back to
 the repo-root file for a checkout run.
 
 **`version`** comes from the git release tag and nowhere else. The release
-workflow passes it as the `NODE_VERSION` build argument, which becomes an
-environment variable the node reads. When `NODE_VERSION` is unset or empty (a
-checkout run, a local `docker build`) the node reports the literal **`dev`**.
+workflow passes it as the `DEVICE_VERSION` build argument, which becomes an
+environment variable the device reads. When `DEVICE_VERSION` is unset or empty (a
+checkout run, a local `docker build`) the device reports the literal **`dev`**.
 There is no `version` file or `__version__`, and the `pyproject.toml` version
 is a fixed placeholder nothing reads.
 
-**`host_serial`** is the `Serial` line of the host's `/proc/cpuinfo`, read once
+**`board_serial`** is the `Serial` line of the board's `/proc/cpuinfo`, read once
 at start. A default container can read it, so no compose or Dockerfile change
 is needed. It is **omitted** (never faked, never `unknown`) when the file is
 unreadable, the line is missing or empty, or the value is all zeros.
 
-`node_venus/node_info.py` is a small helper deliberately **copied** into each
-Python node repo rather than shared as a package, so each node releases
+`driver_venus/device_info.py` is a small helper deliberately **copied** into each
+Python device repo rather than shared as a package, so each device releases
 independently.
 
 **CI gate:** `.github/workflows/manifest.yml` validates `manifest.json` against
-`node-manifest.schema.json`, fetched from `hub` at a **pinned commit**
+`device-manifest.schema.json`, fetched from `hub` at a **pinned commit**
 (`HUB_REF`) with `ajv-cli`, and fails if a manifest containing `version` is
 accepted. Bump `HUB_REF` deliberately to adopt a newer contract. To check
 locally:
 
 ```bash
-npx --yes ajv-cli@5 validate -s path/to/hub/schema/node-manifest.schema.json -d manifest.json
+npx --yes ajv-cli@5 validate -s path/to/hub/schema/device-manifest.schema.json -d manifest.json
 ```

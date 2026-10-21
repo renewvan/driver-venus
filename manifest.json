@@ -1,8 +1,8 @@
 {
-  "node": "venus",
+  "device": "venus",
   "product": "Victron Venus OS bridge",
   "source": "Victron Venus OS MQTT feed (GX device)",
   "publishes": ["battery", "solar", "charger"],
   "manufacturer": "renewvan",
-  "homepage": "https://github.com/renewvan/node-venus"
+  "homepage": "https://github.com/renewvan/driver-venus"
 }

@@ -1,7 +1,7 @@
 """Persistent MQTT connection to the renewvan bus with LWT and a
-retained-topic publish helper. Same shape as the other renewvan/node-*
+retained-topic publish helper. Same shape as the other renewvan/driver-*
 publishers, plus clearing a retained topic when the source reading goes
-invalid, and the retained Node info published on every connect just before
+invalid, and the retained Device info published on every connect just before
 `online`.
 """
 
@@ -12,14 +12,14 @@ import logging
 
 import paho.mqtt.client as mqtt
 
-from node_venus.config import MqttConfig
+from driver_venus.config import MqttConfig
 
 logger = logging.getLogger(__name__)
 
-# 3 segments, not 4: liveness for the whole node, so it cannot be mistaken
+# 3 segments, not 4: liveness for the whole device, so it cannot be mistaken
 # for an entity keyed by a fake `health` id.
 HEALTH_TOPIC = "renewvan/venus/health"
-# Retained Node info, same 3-segment shape; see hub schema/node-info.schema.json.
+# Retained Device info, same 3-segment shape; see hub schema/device-info.schema.json.
 INFO_TOPIC = "renewvan/venus/info"
 
 
@@ -27,7 +27,7 @@ class Publisher:
     def __init__(self, config: MqttConfig, info: str) -> None:
         self._config = config
         self._info = info
-        self._client = mqtt.Client(client_id="node-venus", clean_session=False)
+        self._client = mqtt.Client(client_id="driver-venus", clean_session=False)
         if config.username:
             self._client.username_pw_set(config.username, config.password)
         self._client.will_set(HEALTH_TOPIC, payload="offline", qos=1, retain=True)

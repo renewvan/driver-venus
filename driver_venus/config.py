@@ -1,5 +1,5 @@
 """Config sourced from environment variables — the contract between this
-repo and `hub`'s `docker-compose.yml` `node-venus:` service block. Two
+repo and `hub`'s `docker-compose.yml` `driver-venus:` service block. Two
 separate MQTT connections: the renewvan bus (publish) and the Victron GX /
 Venus OS device's own broker (subscribe).
 

@@ -1,10 +1,10 @@
 import pytest
 
-import node_venus.publisher as publisher_module
-from node_venus.config import MqttConfig
-from node_venus.publisher import HEALTH_TOPIC, INFO_TOPIC, Publisher
+import driver_venus.publisher as publisher_module
+from driver_venus.config import MqttConfig
+from driver_venus.publisher import HEALTH_TOPIC, INFO_TOPIC, Publisher
 
-INFO = '{"node": "venus", "version": "v1"}'
+INFO = '{"device": "venus", "version": "v1"}'
 
 
 class FakeClient:
@@ -60,7 +60,7 @@ def test_failed_connect_publishes_nothing(publisher: Publisher) -> None:
     assert client.published == []
 
 
-def test_info_is_never_cleared_when_the_node_goes_offline(publisher: Publisher) -> None:
+def test_info_is_never_cleared_when_the_device_goes_offline(publisher: Publisher) -> None:
     client = connect(publisher)
     client.published.clear()
     publisher.disconnect()
@@ -72,10 +72,10 @@ def test_info_is_never_cleared_when_the_node_goes_offline(publisher: Publisher) 
 def test_main_publishes_the_stamped_version_in_info(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """NODE_VERSION reaches the info published on connect, through main()."""
+    """DEVICE_VERSION reaches the info published on connect, through main()."""
     import json
 
-    import node_venus.main as main_module
+    import driver_venus.main as main_module
 
     class StopRun(Exception):
         pass
@@ -100,13 +100,13 @@ def test_main_publishes_the_stamped_version_in_info(
     monkeypatch.setenv("VENUS_PORTAL_ID", "abc")
     monkeypatch.setattr(publisher_module.mqtt, "Client", RecordingClient)
     monkeypatch.setattr(main_module, "Subscriber", StubSubscriber)
-    monkeypatch.setattr("sys.argv", ["node-venus"])
+    monkeypatch.setattr("sys.argv", ["driver-venus"])
 
     for env, expected in (("v4.5.6", "v4.5.6"), (None, "dev")):
         if env is None:
-            monkeypatch.delenv("NODE_VERSION", raising=False)
+            monkeypatch.delenv("DEVICE_VERSION", raising=False)
         else:
-            monkeypatch.setenv("NODE_VERSION", env)
+            monkeypatch.setenv("DEVICE_VERSION", env)
         clients.clear()
         with pytest.raises(StopRun):
             main_module.main()
