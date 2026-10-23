@@ -5,6 +5,7 @@ broker or GX device required.
 import pytest
 
 from driver_venus.mapping import (
+    InstanceIdentity,
     SolarYieldHistory,
     map_batteries,
     map_charge_state,
@@ -422,3 +423,128 @@ def test_solar_history_shrinking_days_available_drops_the_oldest_slots():
     _record(history, _captured_messages()[1:])  # keepalive re-send of every slot
     [(_, array)] = history.flush()
     assert array == [210.0, 180.0, 190.0]
+
+
+# --- instance identity: `driver` and `name` -----------------------------------
+
+
+def test_first_sight_of_an_instance_names_its_driver():
+    identity = InstanceIdentity()
+    pairs = map_batteries(fx.BATTERIES_TWO_BANKS)
+    assert identity.driver_pairs(pairs) == [
+        ("renewvan/battery/290/driver", "venus"),
+        ("renewvan/battery/512/driver", "venus"),
+    ]
+
+
+def test_driver_is_published_once_per_instance_not_per_message():
+    identity = InstanceIdentity()
+    pairs = map_batteries(fx.BATTERIES_SMARTSHUNT)
+    identity.driver_pairs(pairs)
+    assert identity.driver_pairs(pairs) == []
+    # another property of the same instance is not a new instance
+    assert identity.driver_pairs([("renewvan/battery/290/charge_state", "bulk")]) == []
+
+
+def test_each_entity_type_gets_its_driver():
+    identity = InstanceIdentity()
+    pairs = [
+        ("renewvan/solar/291/power_w", 14.0),
+        ("renewvan/charger/289/voltage_v", 13.2),
+        ("renewvan/charger/289/source", "ac"),
+    ]
+    assert identity.driver_pairs(pairs) == [
+        ("renewvan/solar/291/driver", "venus"),
+        ("renewvan/charger/289/driver", "venus"),
+    ]
+
+
+def _label(identity: InstanceIdentity, service: str, instance: str, path: str, value):
+    return identity.label_pairs(service, instance, path, {"value": value})
+
+
+def test_custom_name_is_the_instance_name():
+    identity = InstanceIdentity()
+    assert _label(identity, "battery", "290", "CustomName", "Van") == [
+        ("renewvan/battery/290/name", "Van")
+    ]
+
+
+def test_product_name_is_the_name_when_there_is_no_custom_name():
+    identity = InstanceIdentity()
+    assert _label(identity, "solarcharger", "291", "ProductName", "SmartSolar MPPT") == [
+        ("renewvan/solar/291/name", "SmartSolar MPPT")
+    ]
+
+
+def test_custom_name_wins_over_product_name_in_either_order():
+    for first, second in (("CustomName", "ProductName"), ("ProductName", "CustomName")):
+        identity = InstanceIdentity()
+        values = {"CustomName": "Van", "ProductName": "SmartShunt"}
+        _label(identity, "battery", "290", first, values[first])
+        _label(identity, "battery", "290", second, values[second])
+        assert _label(identity, "battery", "290", "CustomName", "Van") == []
+        assert identity._names[("battery", "290")] == "Van"
+
+
+def test_empty_custom_name_falls_back_to_product_name():
+    identity = InstanceIdentity()
+    _label(identity, "charger", "289", "ProductName", "Blue Smart IP22")
+    assert _label(identity, "charger", "289", "CustomName", "  ") == []
+    assert identity._names[("charger", "289")] == "Blue Smart IP22"
+
+
+def test_name_is_cleared_when_venus_stops_providing_a_label():
+    identity = InstanceIdentity()
+    _label(identity, "battery", "290", "CustomName", "Van")
+    assert _label(identity, "battery", "290", "CustomName", None) == [
+        ("renewvan/battery/290/name", None)
+    ]
+
+
+def test_name_falls_back_to_product_name_when_custom_name_is_removed():
+    identity = InstanceIdentity()
+    _label(identity, "battery", "290", "ProductName", "SmartShunt")
+    _label(identity, "battery", "290", "CustomName", "Van")
+    assert _label(identity, "battery", "290", "CustomName", None) == [
+        ("renewvan/battery/290/name", "SmartShunt")
+    ]
+
+
+def test_a_stale_retained_name_is_cleared_by_the_first_null_label():
+    identity = InstanceIdentity()
+    assert _label(identity, "battery", "290", "ProductName", None) == [
+        ("renewvan/battery/290/name", None)
+    ]
+
+
+def test_unchanged_label_is_not_republished_on_keepalive_resend():
+    identity = InstanceIdentity()
+    _label(identity, "battery", "290", "CustomName", "Van")
+    assert _label(identity, "battery", "290", "CustomName", "Van") == []
+    _label(identity, "battery", "290", "CustomName", None)
+    assert _label(identity, "battery", "290", "CustomName", None) == []
+
+
+def test_non_string_label_is_not_a_name():
+    identity = InstanceIdentity()
+    assert _label(identity, "battery", "290", "CustomName", 5) == [
+        ("renewvan/battery/290/name", None)
+    ]
+
+
+def test_alternator_and_charger_labels_name_charger_instances():
+    identity = InstanceIdentity()
+    assert _label(identity, "alternator", "277", "CustomName", "Orion") == [
+        ("renewvan/charger/277/name", "Orion")
+    ]
+    assert _label(identity, "charger", "289", "CustomName", "Blue Smart") == [
+        ("renewvan/charger/289/name", "Blue Smart")
+    ]
+
+
+def test_non_label_paths_and_other_services_produce_no_name():
+    identity = InstanceIdentity()
+    assert _label(identity, "battery", "290", "Devices/0/CustomName", "Van") == []
+    assert _label(identity, "vebus", "276", "CustomName", "Multi") == []
+    assert _label(identity, "battery", "290", "Soc", 80) == []

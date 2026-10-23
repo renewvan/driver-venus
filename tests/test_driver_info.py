@@ -3,18 +3,18 @@ from pathlib import Path
 
 import pytest
 
-import driver_venus.device_info as device_info
-from driver_venus.device_info import build_info, load_device_info, read_board_serial
+import driver_venus.driver_info as driver_info
+from driver_venus.driver_info import build_info, load_driver_info, read_board_serial
 
 REPO_MANIFEST = json.loads((Path(__file__).resolve().parent.parent / "manifest.json").read_text())
 
 MANIFEST = {
-    "device": "venus",
+    "driver": "venus",
     "product": "Test product",
     "source": "Test source",
     "publishes": ["battery", "solar", "charger"],
     "manufacturer": "Acme",
-    "homepage": "https://example.com/device",
+    "homepage": "https://example.com/driver",
 }
 
 
@@ -82,8 +82,8 @@ def test_default_manifest_is_the_repo_root_file_in_a_checkout() -> None:
     assert info == {**REPO_MANIFEST, "version": "v1"}
 
 
-def test_repo_manifest_describes_the_venus_device() -> None:
-    assert REPO_MANIFEST["device"] == "venus"
+def test_repo_manifest_describes_the_venus_driver() -> None:
+    assert REPO_MANIFEST["driver"] == "venus"
     assert REPO_MANIFEST["publishes"] == ["battery", "solar", "charger"]
     assert "version" not in REPO_MANIFEST
     assert "board_serial" not in REPO_MANIFEST
@@ -98,26 +98,26 @@ def test_manifest_beside_the_module_wins_over_the_repo_root(
     root = root_dir / "manifest.json"
     root.write_text(json.dumps({**MANIFEST, "product": "Repo root"}))
 
-    monkeypatch.setattr(device_info, "MANIFEST_PATHS", (beside, root))
+    monkeypatch.setattr(driver_info, "MANIFEST_PATHS", (beside, root))
     assert json.loads(build_info("v1", None))["product"] == "Image copy"
 
     beside.unlink()  # a checkout run has no copy beside the module
     assert json.loads(build_info("v1", None))["product"] == "Repo root"
 
 
-def test_load_device_info_stamps_version_from_device_version_env(
+def test_load_driver_info_stamps_version_from_driver_version_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     for env, expected in (("v4.5.6", "v4.5.6"), (None, "dev"), ("", "dev")):
         if env is None:
-            monkeypatch.delenv("DEVICE_VERSION", raising=False)
+            monkeypatch.delenv("DRIVER_VERSION", raising=False)
         else:
-            monkeypatch.setenv("DEVICE_VERSION", env)
-        assert json.loads(load_device_info())["version"] == expected
+            monkeypatch.setenv("DRIVER_VERSION", env)
+        assert json.loads(load_driver_info())["version"] == expected
 
 
-def test_load_device_info_reads_the_board_serial_from_cpuinfo(
+def test_load_driver_info_reads_the_board_serial_from_cpuinfo(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(device_info, "CPUINFO_PATH", write_cpuinfo(tmp_path, PI_CPUINFO))
-    assert json.loads(load_device_info())["board_serial"] == "00000000a1b2c3d4"
+    monkeypatch.setattr(driver_info, "CPUINFO_PATH", write_cpuinfo(tmp_path, PI_CPUINFO))
+    assert json.loads(load_driver_info())["board_serial"] == "00000000a1b2c3d4"

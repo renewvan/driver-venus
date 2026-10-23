@@ -2,7 +2,7 @@
 No network, no MQTT client — this is the seam unit-tested against fixture
 payloads.
 
-Venus publishes two shapes this device cares about:
+Venus publishes two shapes this driver cares about:
 
 - **Aggregates** — `N/<portal>/system/0/Batteries` (one JSON array element
   per battery service) and `N/<portal>/system/0/SystemState/State` (one
@@ -13,7 +13,10 @@ Venus publishes two shapes this device cares about:
 
 Entity ids are the Venus **device instance** (a stable per-device number,
 e.g. `290`), never the user-editable `name` and never a static map: an
-open-source device cannot know which instances a given van has.
+open-source driver cannot know which instances a given van has.
+
+Every instance also names this driver (`driver`, retained) and, when Venus
+has a label for it, a human `name`: see `InstanceIdentity`.
 
 A `None` value in a returned `(topic, value)` pair means "clear this
 retained topic" (Venus sends `null` when a reading stops being valid, e.g.
@@ -108,6 +111,25 @@ _STATE_ENTITY: dict[str, str] = {
     "charger": "charger",
     "alternator": "charger",
 }
+
+
+# This driver's key: its repo name minus `driver-`, equal to `renewvan/venus/info`.
+DRIVER_KEY = "venus"
+
+# Venus service class -> the entity its instances are published as, for the
+# label paths below. (`entity_topic` ids come from the same instance number.)
+_LABEL_ENTITY: dict[str, str] = {
+    "battery": "battery",
+    "solarcharger": "solar",
+    "alternator": "charger",
+    "charger": "charger",
+}
+
+# Venus per-service label paths, in the order they win: the user's
+# `CustomName`, else the hardware's `ProductName`.
+_LABEL_PATHS: tuple[str, ...] = ("CustomName", "ProductName")
+
+_UNPUBLISHED = object()
 
 
 def entity_topic(entity: str, entity_id: str, prop: str) -> str:
@@ -218,7 +240,7 @@ def map_batteries(payload: dict) -> list[tuple[str, object]]:
 def map_charge_state(payload: dict, entity_ids: list[str]) -> list[tuple[str, object]]:
     """Map a decoded `SystemState/State` payload to a battery
     `charge_state` per known battery id. The system state is one
-    system-wide value, fanned out to every battery id the device has seen."""
+    system-wide value, fanned out to every battery id the driver has seen."""
     value = payload.get("value")
     if value is None:
         return [(entity_topic("battery", i, "charge_state"), None) for i in entity_ids]
@@ -271,3 +293,56 @@ def map_service_message(
     if entity == "charger" and prop == "voltage_v" and service in _CHARGER_SOURCE:
         results.append((entity_topic("charger", instance, "source"), _CHARGER_SOURCE[service]))
     return results
+
+
+class InstanceIdentity:
+    """Retained identity of every entity instance this driver publishes:
+    `driver` (this driver's key) and `name` (Venus's label).
+
+    Stateful like `SolarYieldHistory`, no network, no clock. The caller
+    publishes what it returns as retained identity values.
+
+    `driver_pairs` returns the `driver` publish the first time an instance
+    shows up in any set of pairs; `label_pairs` returns the `name` publish
+    when an instance's label changes. The name is Venus's `CustomName`, else
+    its `ProductName`; an absent, null, empty or non-string label is not
+    usable, and when neither is usable the retained `name` is cleared (`None`)
+    rather than left stale. The first `null` label also clears, so a name
+    retained by an earlier run does not outlive Venus's label. An instance
+    Venus gives no label for publishes no `name` at all. A value already
+    published is not published again, so Venus re-sending every label on each
+    keepalive is silent.
+    """
+
+    def __init__(self) -> None:
+        self._seen: set[tuple[str, str]] = set()
+        self._labels: dict[tuple[str, str], dict[str, str | None]] = {}
+        self._names: dict[tuple[str, str], object] = {}
+
+    def driver_pairs(self, pairs: list[tuple[str, object]]) -> list[tuple[str, object]]:
+        """`driver` pairs for instances in `pairs` not seen before."""
+        results: list[tuple[str, object]] = []
+        for topic, _ in pairs:
+            _, entity, entity_id, _ = topic.split("/", 3)
+            if (entity, entity_id) not in self._seen:
+                self._seen.add((entity, entity_id))
+                results.append((entity_topic(entity, entity_id, "driver"), DRIVER_KEY))
+        return results
+
+    def label_pairs(
+        self, service: str, instance: str, path: str, payload: dict
+    ) -> list[tuple[str, object]]:
+        """The `name` pair for a label message when the resulting name changed;
+        nothing for any other message."""
+        entity = _LABEL_ENTITY.get(service)
+        if entity is None or path not in _LABEL_PATHS:
+            return []
+        key = (entity, instance)
+        value = payload.get("value")
+        labels = self._labels.setdefault(key, {})
+        labels[path] = value.strip() if isinstance(value, str) and value.strip() else None
+        name = next((labels[p] for p in _LABEL_PATHS if labels.get(p)), None)
+        if self._names.get(key, _UNPUBLISHED) == name:
+            return []
+        self._names[key] = name
+        return [(entity_topic(entity, instance, "name"), name)]

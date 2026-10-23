@@ -6,8 +6,8 @@ power system onto the vendor-neutral `battery`, `solar` and `charger`
 entities from `hub`'s `schema/`. No new sensing, just a topic remap of an
 existing feed.
 
-Use this device **if the van already runs Venus OS**. A van without a GX
-device reads its hardware directly with a different device; both publish the
+Use this driver **if the van already runs Venus OS**. A van without a GX
+device reads its hardware directly with a different driver; both publish the
 same entities, so nothing downstream cares which one is in use. See
 `hub/docs/adr/0008-node-naming-and-entity-neutrality.md`.
 
@@ -19,16 +19,16 @@ same entities, so nothing downstream cares which one is in use. See
   the process and a `R/<portalId>/keepalive` is sent on connect and every
   30 s so slow-changing values (a full battery's SoC) still appear.
 - **Renewvan bus** (publish only, retained): `renewvan/<entity>/<id>/*`, plus
-  device liveness on `renewvan/venus/health` (`online`/`offline` via MQTT
+  driver liveness on `renewvan/venus/health` (`online`/`offline` via MQTT
   LWT) — deliberately 3 segments, not 4, so it can't be mistaken for an
   entity keyed by a fake `health` id.
-- **Device info** (retained): `renewvan/venus/info`, one JSON message
-  describing this device (see [Device info](#device-info)). Published on **every
+- **Driver info** (retained): `renewvan/venus/info`, one JSON message
+  describing this driver (see [Driver info](#driver-info)). Published on **every
   connect, immediately before `online`**, so a consumer that sees `online`
   always finds info already retained. It is **never cleared**: it stays
-  retained when the device goes offline or its last will fires, so a consumer
+  retained when the driver goes offline or its last will fires, so a consumer
   can say "offline, last seen vX". Payload shape: `hub`'s
-  `schema/device-info.schema.json`.
+  `schema/driver-info.schema.json`.
 
 ## Ids
 
@@ -36,6 +36,17 @@ An entity's `<id>` is its Venus **device instance** (e.g. `290`), the stable
 per-device number Venus assigns. It is never derived from the user-editable
 device name and there is no static map to maintain: a van's devices are
 discovered from the feed.
+
+Every instance also publishes two retained identity topics under its own
+`renewvan/<entity>/<id>/`, for `battery`, `solar` and `charger`:
+
+| Topic | Payload | When |
+|---|---|---|
+| `driver` | `"venus"` (this driver's key, the `renewvan/venus/info` segment) | when the instance is first discovered, and again on every bus reconnect |
+| `name` | the instance's label as a JSON string | Venus's `CustomName`, else its `ProductName` (`<service>/<n>/CustomName` / `ProductName`); republished when it changes and again on every bus reconnect. Cleared (empty retained payload) when Venus stops providing a usable label (null, empty or non-string). An instance Venus gives no label for publishes no `name` |
+
+The dashboard uses `driver` to attribute an instance to this driver when
+another driver (e.g. `wattcycle`) publishes the same entity type.
 
 ## Mapping
 
@@ -54,6 +65,9 @@ discovered from the feed.
 | `solarcharger/<n>/State` | `solar/<n>/charge_state` | |
 | `alternator/<n>/Dc/0/Voltage`/`Current`/`Power`, `Dc/In/V` | `charger/<n>/voltage_v`/`current_a`/`power_w`/`input_voltage_v` | DC-DC charger; `source` = `alternator` |
 | `charger/<n>/Dc/0/Voltage`/`Current` | `charger/<n>/voltage_v`/`current_a` | AC charger (e.g. BlueSmart); `source` = `ac`. Venus publishes AC *input* power, not output, so `power_w` is not set |
+| `battery/<n>/CustomName` / `ProductName` | `battery/<n>/name` | `CustomName`, else `ProductName`; cleared when neither is usable |
+| `solarcharger/<n>/CustomName` / `ProductName` | `solar/<n>/name` | same |
+| `alternator/<n>/CustomName` / `ProductName`, `charger/<n>/CustomName` / `ProductName` | `charger/<n>/name` | same |
 | `alternator/<n>/State`, `charger/<n>/State` | `charger/<n>/charge_state` | 246 → `absorption`, 247 → `equalize`, 248 (BatterySafe) → `float`; any other unmapped code (e.g. 11, power supply) → `unknown` |
 
 `Batteries[].state`/`.bmsstate`/`.name`/`.id` are never read. Anything Venus
@@ -65,7 +79,7 @@ that stopped being valid does not linger on the bus.
 day slot (`History/Daily/0..30/Yield`, kWh, slot 0 = today) and the slot count
 in `History/Overall/DaysAvailable`. A fresh subscribe delivers every slot at
 once and each `R/<portal>/keepalive` makes Venus send them all again, so the
-device folds them into one `yield_history_wh` array (the only stateful part of
+driver folds them into one `yield_history_wh` array (the only stateful part of
 the mapping, `SolarYieldHistory`). The array is published after the burst of
 slot messages has been quiet for 2 s, and only when it is complete (every slot
 `DaysAvailable` promises has been re-received since the last publish) and
@@ -123,29 +137,29 @@ ticked. It runs the tests, publishes only its own tag (never `:latest`) and writ
 to `main`. The process is shared by every renewvan repo and lives in `hub` (`hub/docs/adr/0015-one-release-process-via-reusable-workflows.md`);
 this repo's `release.yml` only says what it ships.
 
-The release workflow passes the tag as the `DEVICE_VERSION` build argument, which
-the Dockerfile promotes to an environment variable the device reads (see
-[Device info](#device-info)). Nothing else carries a version.
+The release workflow passes the tag as the `DRIVER_VERSION` build argument, which
+the Dockerfile promotes to an environment variable the driver reads (see
+[Driver info](#driver-info)). Nothing else carries a version.
 
-## Device info
+## Driver info
 
-The device describes itself to the dashboard with a manifest plus two runtime
-values. Contract: `hub`'s `schema/device-info.schema.json` (decision record:
+The driver describes itself to the dashboard with a manifest plus two runtime
+values. Contract: `hub`'s `schema/driver-info.schema.json` (decision record:
 `hub/docs/adr/0011-node-manifest-and-retained-info-topic.md`).
 
 **`manifest.json`** (repo root) is the single source of the static fields:
-`device` (`venus`, the topic key, same as `renewvan/venus/health`), `product`,
-`source`, `publishes` (`battery`, `solar`, `charger`: one device, three entity
-types, which is how the dashboard attributes those instances to this device) and
+`driver` (`venus`, the topic key, same as `renewvan/venus/health`), `product`,
+`source`, `publishes` (`battery`, `solar`, `charger`: one driver, three entity
+types, which is how the dashboard attributes instances that do not name their `driver` to this driver) and
 optional `manufacturer` / `homepage`. `version` and `board_serial` are
 **forbidden** in it. The image build copies it beside the module
-(`driver_venus/manifest.json`); the device reads that copy first and falls back to
+(`driver_venus/manifest.json`); the driver reads that copy first and falls back to
 the repo-root file for a checkout run.
 
 **`version`** comes from the git release tag and nowhere else. The release
-workflow passes it as the `DEVICE_VERSION` build argument, which becomes an
-environment variable the device reads. When `DEVICE_VERSION` is unset or empty (a
-checkout run, a local `docker build`) the device reports the literal **`dev`**.
+workflow passes it as the `DRIVER_VERSION` build argument, which becomes an
+environment variable the driver reads. When `DRIVER_VERSION` is unset or empty (a
+checkout run, a local `docker build`) the driver reports the literal **`dev`**.
 There is no `version` file or `__version__`, and the `pyproject.toml` version
 is a fixed placeholder nothing reads.
 
@@ -154,16 +168,16 @@ at start. A default container can read it, so no compose or Dockerfile change
 is needed. It is **omitted** (never faked, never `unknown`) when the file is
 unreadable, the line is missing or empty, or the value is all zeros.
 
-`driver_venus/device_info.py` is a small helper deliberately **copied** into each
-Python device repo rather than shared as a package, so each device releases
+`driver_venus/driver_info.py` is a small helper deliberately **copied** into each
+Python driver repo rather than shared as a package, so each driver releases
 independently.
 
 **CI gate:** `.github/workflows/manifest.yml` calls hub's reusable manifest workflow,
-which validates `manifest.json` against `device-manifest.schema.json` at a **pinned hub
+which validates `manifest.json` against `driver-manifest.schema.json` at a **pinned hub
 commit** (`hub-ref`, the same SHA the workflow is pinned with) and fails if a manifest
 containing `version` is accepted. Bump both together to adopt a newer contract. To check
 locally:
 
 ```bash
-npx --yes ajv-cli@5 validate -s path/to/hub/schema/device-manifest.schema.json -d manifest.json
+npx --yes ajv-cli@5 validate -s path/to/hub/schema/driver-manifest.schema.json -d manifest.json
 ```

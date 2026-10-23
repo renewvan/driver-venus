@@ -7,7 +7,7 @@ import argparse
 import logging
 
 from driver_venus.config import load_config
-from driver_venus.device_info import load_device_info
+from driver_venus.driver_info import load_driver_info
 from driver_venus.publisher import Publisher
 from driver_venus.subscriber import Subscriber
 
@@ -25,9 +25,9 @@ def main() -> None:
     )
 
     config = load_config()
-    # Version is stamped by the release build (DEVICE_VERSION); unset reports "dev".
+    # Version is stamped by the release build (DRIVER_VERSION); unset reports "dev".
     # Board serial is read once, here, at process start.
-    publisher = Publisher(config.mqtt, load_device_info())
+    publisher = Publisher(config.mqtt, load_driver_info())
     publisher.connect()
     subscriber = Subscriber(config, publisher)
     try:
