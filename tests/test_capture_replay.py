@@ -7,7 +7,7 @@ redacted in the capture.
 import json
 from pathlib import Path
 
-from driver_venus.mapping import map_service_message, split_service_topic
+from driver_venus.mapping import InstanceIdentity, map_service_message, split_service_topic
 
 CAPTURE = Path(__file__).parent / "fixtures" / "venus_capture_2026-10-16.json"
 PORTAL = "PORTAL"
@@ -30,4 +30,18 @@ def test_ip22_capture_publishes_only_schema_fields():
         "renewvan/charger/289/source": "ac",
         "renewvan/charger/289/current_a": 30.0,
         "renewvan/charger/289/charge_state": "bulk",
+    }
+
+
+def test_capture_names_each_instance_from_its_custom_name():
+    identity = InstanceIdentity()
+    names: dict[str, object] = {}
+    for topic, payload in json.loads(CAPTURE.read_text()).items():
+        parsed = split_service_topic(topic, PORTAL)
+        if parsed is not None:
+            names.update(identity.label_pairs(*parsed, payload))
+    assert names == {
+        "renewvan/battery/290/name": "Van",
+        "renewvan/charger/289/name": "Van Blue Smart",
+        "renewvan/solar/291/name": "Van",
     }

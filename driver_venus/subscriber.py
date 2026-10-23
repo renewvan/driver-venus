@@ -8,8 +8,9 @@ connect and periodically afterwards to make Venus (re)publish current
 values — otherwise a slow-changing value (a full battery's SoC) would not
 appear until it next moved.
 
-Thin I/O adapter around paho-mqtt; not unit-tested (see mapping.py for the
-tested seam).
+Thin I/O adapter around paho-mqtt. The pure mapping is tested in
+test_mapping.py; the message path (retained identity vs. values) in
+test_subscriber.py, against a recording publisher.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ import paho.mqtt.client as mqtt
 
 from driver_venus.config import AppConfig
 from driver_venus.mapping import (
+    InstanceIdentity,
     SolarYieldHistory,
     map_batteries,
     map_charge_state,
@@ -55,6 +57,10 @@ class Subscriber:
         self._solar_history = SolarYieldHistory()
         self._history_lock = threading.Lock()
         self._history_timer: threading.Timer | None = None
+        # `driver` / `name` of each discovered instance; touched from the Venus
+        # client thread and the history flush timer.
+        self._identity = InstanceIdentity()
+        self._identity_lock = threading.Lock()
 
         self._client = mqtt.Client(client_id="driver-venus-source", clean_session=False)
         self._client.reconnect_delay_set(min_delay=1, max_delay=30)
@@ -82,6 +88,7 @@ class Subscriber:
         if not isinstance(payload, dict):
             return
 
+        names: list[tuple[str, object]] = []
         if msg.topic == self._batteries_topic:
             pairs = map_batteries(payload)
             for topic, _ in pairs:
@@ -94,12 +101,26 @@ class Subscriber:
             if parsed is None:
                 return
             pairs = map_service_message(*parsed, payload)
+            with self._identity_lock:
+                names = self._identity.label_pairs(*parsed, payload)
             with self._history_lock:
                 if self._solar_history.handle(*parsed, payload):
                     self._schedule_history_flush()
 
+        self._publish(pairs, names)
+
+    def _publish(
+        self, pairs: list[tuple[str, object]], names: list[tuple[str, object]] | None = None
+    ) -> None:
+        """Publish the mapped `pairs`, plus the retained identity (`name`s and the
+        `driver` of any instance not seen before) of the instances they touch."""
+        names = names or []
+        with self._identity_lock:
+            drivers = self._identity.driver_pairs(pairs + names)
         for topic, value in pairs:
             self._publisher.publish(topic, value)
+        for topic, value in drivers + names:
+            self._publisher.publish_identity(topic, value)
 
     def _schedule_history_flush(self) -> None:
         """(Re)start the quiet-period timer. Caller holds `_history_lock`."""
@@ -112,8 +133,7 @@ class Subscriber:
     def _flush_history(self) -> None:
         with self._history_lock:
             pairs = self._solar_history.flush()
-        for topic, value in pairs:
-            self._publisher.publish(topic, value)
+        self._publish(pairs)
 
     def run_forever(self) -> None:
         self._client.connect(self._config.venus.host, self._config.venus.port)

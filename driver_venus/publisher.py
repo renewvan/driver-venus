@@ -1,7 +1,7 @@
 """Persistent MQTT connection to the renewvan bus with LWT and a
 retained-topic publish helper. Same shape as the other renewvan/driver-*
 publishers, plus clearing a retained topic when the source reading goes
-invalid, and the retained Device info published on every connect just before
+invalid, and the retained Driver info published on every connect just before
 `online`.
 """
 
@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 
 import paho.mqtt.client as mqtt
 
@@ -16,10 +17,10 @@ from driver_venus.config import MqttConfig
 
 logger = logging.getLogger(__name__)
 
-# 3 segments, not 4: liveness for the whole device, so it cannot be mistaken
+# 3 segments, not 4: liveness for the whole driver, so it cannot be mistaken
 # for an entity keyed by a fake `health` id.
 HEALTH_TOPIC = "renewvan/venus/health"
-# Retained Device info, same 3-segment shape; see hub schema/device-info.schema.json.
+# Retained Driver info, same 3-segment shape; see hub schema/driver-info.schema.json.
 INFO_TOPIC = "renewvan/venus/info"
 
 
@@ -27,6 +28,10 @@ class Publisher:
     def __init__(self, config: MqttConfig, info: str) -> None:
         self._config = config
         self._info = info
+        # Retained identity topics (`driver`, `name`) of every discovered instance, replayed
+        # on every (re)connect. A cleared topic is dropped.
+        self._identity: dict[str, object] = {}
+        self._identity_lock = threading.Lock()
         self._client = mqtt.Client(client_id="driver-venus", clean_session=False)
         if config.username:
             self._client.username_pw_set(config.username, config.password)
@@ -42,6 +47,10 @@ class Publisher:
             # Info first, then online: a consumer that sees online always finds info
             # retained. Never cleared on offline or by the will ("last seen vX").
             client.publish(INFO_TOPIC, payload=self._info, qos=1, retain=True)
+            with self._identity_lock:
+                identity = list(self._identity.items())
+            for topic, payload in identity:
+                self.publish(topic, payload)
             client.publish(HEALTH_TOPIC, payload="online", qos=1, retain=True)
         else:
             logger.error("Renewvan-bus MQTT connect failed with rc=%s", rc)
@@ -58,6 +67,17 @@ class Publisher:
             self._client.publish(topic, payload=None, qos=1, retain=True)
             return
         self._client.publish(topic, payload=json.dumps(payload), qos=1, retain=True)
+
+    def publish_identity(self, topic: str, payload: object) -> None:
+        """Publish a retained identity value (an entity instance's `driver` / `name`)
+        and remember it so every reconnect publishes it again. `None` clears the
+        topic and forgets it."""
+        with self._identity_lock:
+            if payload is None:
+                self._identity.pop(topic, None)
+            else:
+                self._identity[topic] = payload
+        self.publish(topic, payload)
 
     def disconnect(self) -> None:
         self._client.publish(HEALTH_TOPIC, payload="offline", qos=1, retain=True)

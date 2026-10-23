@@ -4,7 +4,7 @@ import driver_venus.publisher as publisher_module
 from driver_venus.config import MqttConfig
 from driver_venus.publisher import HEALTH_TOPIC, INFO_TOPIC, Publisher
 
-INFO = '{"device": "venus", "version": "v1"}'
+INFO = '{"driver": "venus", "version": "v1"}'
 
 
 class FakeClient:
@@ -54,13 +54,43 @@ def test_info_is_published_again_on_every_reconnect(publisher: Publisher) -> Non
     assert client.published == [(INFO_TOPIC, INFO, True), (HEALTH_TOPIC, "online", True)]
 
 
+def test_identity_is_published_retained_and_replayed_on_every_reconnect(
+    publisher: Publisher,
+) -> None:
+    client = connect(publisher)
+    publisher.publish_identity("renewvan/battery/290/driver", "venus")
+    publisher.publish_identity("renewvan/battery/290/name", "Van")
+    assert client.published[-2:] == [
+        ("renewvan/battery/290/driver", '"venus"', True),
+        ("renewvan/battery/290/name", '"Van"', True),
+    ]
+    client.published.clear()
+    connect(publisher)
+    assert client.published == [
+        (INFO_TOPIC, INFO, True),
+        ("renewvan/battery/290/driver", '"venus"', True),
+        ("renewvan/battery/290/name", '"Van"', True),
+        (HEALTH_TOPIC, "online", True),
+    ]
+
+
+def test_cleared_identity_is_cleared_on_the_bus_and_not_replayed(publisher: Publisher) -> None:
+    client = connect(publisher)
+    publisher.publish_identity("renewvan/battery/290/name", "Van")
+    publisher.publish_identity("renewvan/battery/290/name", None)
+    assert client.published[-1] == ("renewvan/battery/290/name", None, True)
+    client.published.clear()
+    connect(publisher)
+    assert client.published == [(INFO_TOPIC, INFO, True), (HEALTH_TOPIC, "online", True)]
+
+
 def test_failed_connect_publishes_nothing(publisher: Publisher) -> None:
     client = publisher._client
     publisher._on_connect(client, None, {}, 5)
     assert client.published == []
 
 
-def test_info_is_never_cleared_when_the_device_goes_offline(publisher: Publisher) -> None:
+def test_info_is_never_cleared_when_the_driver_goes_offline(publisher: Publisher) -> None:
     client = connect(publisher)
     client.published.clear()
     publisher.disconnect()
@@ -72,7 +102,7 @@ def test_info_is_never_cleared_when_the_device_goes_offline(publisher: Publisher
 def test_main_publishes_the_stamped_version_in_info(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """DEVICE_VERSION reaches the info published on connect, through main()."""
+    """DRIVER_VERSION reaches the info published on connect, through main()."""
     import json
 
     import driver_venus.main as main_module
@@ -104,9 +134,9 @@ def test_main_publishes_the_stamped_version_in_info(
 
     for env, expected in (("v4.5.6", "v4.5.6"), (None, "dev")):
         if env is None:
-            monkeypatch.delenv("DEVICE_VERSION", raising=False)
+            monkeypatch.delenv("DRIVER_VERSION", raising=False)
         else:
-            monkeypatch.setenv("DEVICE_VERSION", env)
+            monkeypatch.setenv("DRIVER_VERSION", env)
         clients.clear()
         with pytest.raises(StopRun):
             main_module.main()

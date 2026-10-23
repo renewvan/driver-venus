@@ -1,9 +1,9 @@
 [project]
 name = "driver-venus"
 # Fixed placeholder: nothing reads this. The git release tag is the only version
-# source (stamped into the image as DEVICE_VERSION).
+# source (stamped into the image as DRIVER_VERSION).
 version = "0.0.0"
-description = "Victron Venus OS MQTT -> renewvan bus device (battery, solar, charger)"
+description = "Victron Venus OS MQTT -> renewvan bus driver (battery, solar, charger)"
 requires-python = ">=3.11"
 dependencies = [
     "paho-mqtt>=1.6,<2",

@@ -1,8 +1,8 @@
-"""Device info: manifest.json + stamped version + Board serial, serialised for the bus.
+"""Driver info: manifest.json + stamped version + Board serial, serialised for the bus.
 
-Copied (not imported) into every renewvan Python device repo; see hub
+Copied (not imported) into every renewvan Python driver repo; see hub
 docs/adr/0011-node-manifest-and-retained-info-topic.md for why there is no
-shared package. Contract: hub `schema/device-info.schema.json`.
+shared package. Contract: hub `schema/driver-info.schema.json`.
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ def _find_manifest() -> Path:
 def build_info(
     version: str | None, board_serial: str | None, manifest_path: Path | None = None
 ) -> str:
-    """Device info JSON: manifest fields, `version` (or `dev`), `board_serial` when known."""
+    """Driver info JSON: manifest fields, `version` (or `dev`), `board_serial` when known."""
     info = json.loads((manifest_path or _find_manifest()).read_text())
     info["version"] = version or "dev"
     if board_serial:
@@ -53,7 +53,7 @@ def build_info(
     return json.dumps(info)
 
 
-def load_device_info() -> str:
-    """Device info for this process: version from the release-stamped `DEVICE_VERSION`
+def load_driver_info() -> str:
+    """Driver info for this process: version from the release-stamped `DRIVER_VERSION`
     (unset or empty reports `dev`), Board serial read once from /proc/cpuinfo."""
-    return build_info(os.environ.get("DEVICE_VERSION"), read_board_serial(CPUINFO_PATH))
+    return build_info(os.environ.get("DRIVER_VERSION"), read_board_serial(CPUINFO_PATH))

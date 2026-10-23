@@ -1,5 +1,5 @@
 {
-  "device": "venus",
+  "driver": "venus",
   "product": "Victron Venus OS bridge",
   "source": "Victron Venus OS MQTT feed (GX device)",
   "publishes": ["battery", "solar", "charger"],
