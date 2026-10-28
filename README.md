@@ -58,6 +58,13 @@ another driver (e.g. `wattcycle`) publishes the same entity type.
 | `battery/<n>/History/TimeSinceLastFullCharge` | `battery/<n>/time_since_full_charge_s` | |
 | `battery/<n>/Capacity` | `battery/<n>/capacity_ah` | a shunt's configured bank capacity |
 | `battery/<n>/Capacity` + `ConsumedAmphours` | `battery/<n>/remaining_ah` | capacity plus the shunt's (negative) Ah drawn since its last sync, clamped at 0; published once both are known. A service that reports `InstalledCapacity` (whose `Capacity` may already be the remaining Ah) publishes neither |
+| `battery/<n>/Voltages/Cell<N>` or `Cell/<N>/Volts` | `battery/<n>/cell_voltages_v` | one retained array, index _i_ = cell _i_+1, volts. A `null` cell is a `null` slot, never `0`. See below |
+| `battery/<n>/Balances/Cell<N>` | `battery/<n>/cell_balancing` | one retained boolean array aligned with `cell_voltages_v`; absent if that is. Venus reads a BMS that does not report balancing as `0`, so that publishes `false` |
+| `battery/<n>/System/Temperature1..4`, `System/MOSTemperature` | `battery/<n>/temperatures_c` | one retained array in that order (the MOSFET last); a probe Venus has no value for is `null`, keeping its index |
+| `battery/<n>/System/MaxCellVoltage` / `MinCellVoltage`, `Voltages/Diff` or `Cell/Diff` | `battery/<n>/cell_voltage_max_v` / `cell_voltage_min_v` / `cell_voltage_delta_v` | only what Venus reports, never computed here |
+| `battery/<n>/Io/AllowToCharge` / `Io/AllowToDischarge` | `battery/<n>/allow_charge` / `allow_discharge` | Venus reads an unknown FET state as `0`, so a `false` cannot be told from "not reporting" |
+| `battery/<n>/Info/MaxChargeVoltage` / `MaxChargeCurrent` / `MaxDischargeCurrent` | `battery/<n>/charge_voltage_limit_v` / `charge_current_limit_a` / `discharge_current_limit_a` | |
+| `battery/<n>/Alarms/*` | `battery/<n>/protections` | one retained array of schema names; only alarm level `2` is active (warnings are ignored). See below |
 | `system/0/SystemState/State` | `battery/<id>/charge_state` | one system-wide value, fanned out to every battery id seen |
 | `solarcharger/<n>/Yield/Power` | `solar/<n>/power_w` | |
 | `solarcharger/<n>/Dc/0/Voltage`/`Current` | `solar/<n>/battery_voltage_v`/`battery_current_a` | |
@@ -71,6 +78,30 @@ another driver (e.g. `wattcycle`) publishes the same entity type.
 | `solarcharger/<n>/CustomName` / `ProductName` | `solar/<n>/name` | same |
 | `alternator/<n>/CustomName` / `ProductName`, `charger/<n>/CustomName` / `ProductName` | `charger/<n>/name` | same |
 | `alternator/<n>/State`, `charger/<n>/State` | `charger/<n>/charge_state` | 246 → `absorption`, 247 → `equalize`, 248 (BatterySafe) → `float`; any other unmapped code (e.g. 11, power supply) → `unknown` |
+
+**BMS data.** The cell, probe, balancing, limit, allow and alarm rows are read from
+the per-device paths `N/<portal>/battery/<instance>/...` (the same instance id as
+`Batteries[]`, already covered by the `N/<portalId>/#` subscription), not from
+`system/0/Batteries`. They are `dbus-serialbattery` extensions whose layout depends
+on its configuration (`BATTERY_CELL_DATA_FORMAT`) and BMS, so each is published only
+when Venus sends it: a plain SmartShunt publishes none of the cell data. Victron's
+own paths are the `Io/AllowTo*`, `Info/Max*` and `Alarms/*` ones. Contract: `hub`
+`docs/adr/0022-per-cell-bms-data-lives-on-battery.md`. Like the solar history, each
+array is built from one message per slot (`BatteryBms`), published once the burst has
+been quiet for 2 s and only when it differs from the last publish, and replaced
+wholesale at its new length if the cell count changes. When no cell has a value the
+array is absent (cleared), never `[]` or all `null`s.
+
+`protections` maps alarms by name: `HighCellVoltage` `cell_overvoltage`,
+`LowCellVoltage` `cell_undervoltage`, `HighVoltage` `pack_overvoltage`, `LowVoltage`
+`pack_undervoltage`, `HighChargeTemperature` / `LowChargeTemperature`
+`charge_overtemperature` / `charge_undertemperature`, `HighTemperature` /
+`LowTemperature` `overtemperature` / `undertemperature`, `HighChargeCurrent` /
+`HighDischargeCurrent` `charge_overcurrent` / `discharge_overcurrent`,
+`InternalFailure` `internal_fault`, `CellImbalance` `cell_imbalance`. Any other alarm
+at level 2 publishes `other` (and is logged); `LowSoc`, `BmsCable`, `FuseBlown`,
+`StateOfHealth` and the starter-battery alarms are ignored. `[]` means alarms are
+reported and none is at level 2; the property is absent while every alarm is `null`.
 
 `Batteries[].state`/`.bmsstate`/`.name`/`.id` are never read. Anything Venus
 publishes that the schema has no property for is ignored. A value that goes
