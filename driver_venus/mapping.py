@@ -221,6 +221,76 @@ class SolarYieldHistory:
         return results
 
 
+_INSTALLED_CAPACITY_PATH = "InstalledCapacity"
+
+
+class BatteryFuelGauge:
+    """Maps a battery service's own fuel gauge to `capacity_ah` and
+    `remaining_ah`, so consumers can cross-check `soc_pct` against the
+    source's counter.
+
+    A shunt on VE.Direct (SmartShunt, BMV) reports `Capacity` as the bank's
+    configured capacity and `ConsumedAmphours` as a negative count of the Ah
+    drawn since its last sync (captured: 314.0 and -24.8 at a SoC of 92.6).
+    `remaining_ah` is therefore `Capacity + ConsumedAmphours`, which needs
+    both, so this is stateful like `SolarYieldHistory`. No network, no clock.
+
+    A service that also reports `InstalledCapacity` (a BMS on CAN, for
+    instance) may use `Capacity` for the *remaining* Ah instead. That shape
+    has not been seen from a real device, so such an instance publishes
+    neither property (and clears them, should they already be out) rather
+    than a value that may mean something else.
+
+    A null or non-numeric reading clears what it fed. A computed remaining
+    below zero is clamped to 0, the schema's minimum.
+    """
+
+    def __init__(self) -> None:
+        self._capacity: dict[str, float | None] = {}
+        self._consumed: dict[str, float | None] = {}
+        self._remaining_published: set[str] = set()
+        self._installed: set[str] = set()
+
+    def handle(
+        self, service: str, instance: str, path: str, payload: dict
+    ) -> list[tuple[str, object]]:
+        """`(topic, value)` pairs for one per-service message; nothing for any
+        message that is not a battery's capacity or consumed Ah."""
+        if service != "battery" or instance in self._installed:
+            return []
+        capacity_topic = entity_topic("battery", instance, "capacity_ah")
+        remaining_topic = entity_topic("battery", instance, "remaining_ah")
+
+        if path == _INSTALLED_CAPACITY_PATH:
+            self._installed.add(instance)
+            return [(capacity_topic, None), (remaining_topic, None)]
+
+        value = payload.get("value")
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            value = None
+
+        results: list[tuple[str, object]] = []
+        if path == "Capacity":
+            value = value if value is None or value >= 0 else None
+            self._capacity[instance] = value
+            results.append((capacity_topic, value))
+        elif path == "ConsumedAmphours":
+            self._consumed[instance] = value
+        else:
+            return []
+
+        capacity = self._capacity.get(instance)
+        consumed = self._consumed.get(instance)
+        if capacity is not None and consumed is not None:
+            # Round like the scalar mapping: 314.0 + -24.7999992 is 289.2000008.
+            results.append((remaining_topic, max(round(capacity + consumed, 3), 0.0)))
+            self._remaining_published.add(instance)
+        elif instance in self._remaining_published:
+            results.append((remaining_topic, None))
+            self._remaining_published.discard(instance)
+        return results
+
+
 def map_batteries(payload: dict) -> list[tuple[str, object]]:
     """Map a decoded `N/<portal>/system/0/Batteries` payload (`{"value":
     [...]}`) to `(topic, value)` pairs, one id per element's Venus

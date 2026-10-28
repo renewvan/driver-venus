@@ -5,6 +5,7 @@ broker or GX device required.
 import pytest
 
 from driver_venus.mapping import (
+    BatteryFuelGauge,
     InstanceIdentity,
     SolarYieldHistory,
     map_batteries,
@@ -226,6 +227,78 @@ def test_time_to_go_passes_venus_ten_day_cap_through():
     assert map_service_message("battery", "290", "TimeToGo", fx.TIME_TO_GO_SENTINEL) == [
         ("renewvan/battery/290/time_to_go_s", 863999.9375)
     ]
+
+
+# --- battery fuel gauge -> capacity_ah / remaining_ah ------------------------
+
+CAPACITY_TOPIC = "renewvan/battery/290/capacity_ah"
+REMAINING_TOPIC = "renewvan/battery/290/remaining_ah"
+
+
+def test_fuel_gauge_publishes_capacity_and_remaining_from_consumed_ah():
+    gauge = BatteryFuelGauge()
+    assert gauge.handle("battery", "290", "Capacity", fx.CAPACITY) == [(CAPACITY_TOPIC, 314.0)]
+    # 314.0 + -24.8, without float noise.
+    assert gauge.handle("battery", "290", "ConsumedAmphours", fx.CONSUMED_AMPHOURS) == [
+        (REMAINING_TOPIC, 289.2)
+    ]
+
+
+def test_fuel_gauge_waits_for_both_paths_whatever_the_arrival_order():
+    gauge = BatteryFuelGauge()
+    assert gauge.handle("battery", "290", "ConsumedAmphours", fx.CONSUMED_AMPHOURS) == []
+    assert gauge.handle("battery", "290", "Capacity", fx.CAPACITY) == [
+        (CAPACITY_TOPIC, 314.0),
+        (REMAINING_TOPIC, 289.2),
+    ]
+
+
+def test_fuel_gauge_null_consumed_clears_remaining_but_keeps_capacity():
+    gauge = BatteryFuelGauge()
+    gauge.handle("battery", "290", "Capacity", fx.CAPACITY)
+    gauge.handle("battery", "290", "ConsumedAmphours", fx.CONSUMED_AMPHOURS)
+    assert gauge.handle("battery", "290", "ConsumedAmphours", {"value": None}) == [
+        (REMAINING_TOPIC, None)
+    ]
+    # Already cleared: a second null says nothing more.
+    assert gauge.handle("battery", "290", "ConsumedAmphours", {"value": None}) == []
+
+
+def test_fuel_gauge_null_capacity_clears_both():
+    gauge = BatteryFuelGauge()
+    gauge.handle("battery", "290", "Capacity", fx.CAPACITY)
+    gauge.handle("battery", "290", "ConsumedAmphours", fx.CONSUMED_AMPHOURS)
+    assert gauge.handle("battery", "290", "Capacity", {"value": None}) == [
+        (CAPACITY_TOPIC, None),
+        (REMAINING_TOPIC, None),
+    ]
+
+
+def test_fuel_gauge_remaining_never_goes_below_zero():
+    gauge = BatteryFuelGauge()
+    gauge.handle("battery", "290", "Capacity", {"value": 100.0})
+    assert gauge.handle("battery", "290", "ConsumedAmphours", {"value": -120.0}) == [
+        (REMAINING_TOPIC, 0.0)
+    ]
+
+
+def test_fuel_gauge_skips_a_service_that_reports_installed_capacity():
+    # Such a service may use `Capacity` for the remaining Ah: publish neither,
+    # and clear what an earlier message already put out.
+    gauge = BatteryFuelGauge()
+    gauge.handle("battery", "512", "Capacity", {"value": 250.0})
+    assert gauge.handle("battery", "512", "InstalledCapacity", {"value": 280.0}) == [
+        ("renewvan/battery/512/capacity_ah", None),
+        ("renewvan/battery/512/remaining_ah", None),
+    ]
+    assert gauge.handle("battery", "512", "Capacity", {"value": 250.0}) == []
+    assert gauge.handle("battery", "512", "ConsumedAmphours", {"value": -30.0}) == []
+
+
+def test_fuel_gauge_ignores_other_services_and_paths():
+    gauge = BatteryFuelGauge()
+    assert gauge.handle("solarcharger", "291", "Capacity", fx.CAPACITY) == []
+    assert gauge.handle("battery", "290", "Soc", {"value": 92.6}) == []
 
 
 # --- everything else is ignored -----------------------------------------------
