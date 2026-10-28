@@ -24,6 +24,7 @@ import paho.mqtt.client as mqtt
 
 from driver_venus.config import AppConfig
 from driver_venus.mapping import (
+    BatteryBms,
     BatteryFuelGauge,
     InstanceIdentity,
     SolarYieldHistory,
@@ -37,9 +38,10 @@ from driver_venus.publisher import Publisher
 logger = logging.getLogger(__name__)
 
 KEEPALIVE_INTERVAL_S = 30
-# Venus sends a controller's day slots as a burst of one-per-slot messages.
-# The history array is published once no history message has arrived for
-# this long, so a consumer never sees a half-filled or half-shifted array.
+# Venus sends a controller's day slots (and a BMS's cells, probes and alarms)
+# as a burst of one-per-slot messages. The array is published once no such
+# message has arrived for this long, so a consumer never sees a half-filled or
+# half-shifted array.
 HISTORY_QUIET_PERIOD_S = 2.0
 
 
@@ -61,6 +63,9 @@ class Subscriber:
         # Pairs each battery's Capacity with its ConsumedAmphours; Venus client
         # thread only.
         self._fuel_gauge = BatteryFuelGauge()
+        # Folds the per-cell / per-probe / per-alarm Venus messages into the BMS arrays;
+        # flushed by the same quiet-period timer and lock as the solar history.
+        self._bms = BatteryBms()
         # `driver` / `name` of each discovered instance; touched from the Venus
         # client thread and the history flush timer.
         self._identity = InstanceIdentity()
@@ -110,7 +115,10 @@ class Subscriber:
             with self._identity_lock:
                 names = self._identity.label_pairs(*parsed, payload)
             with self._history_lock:
-                if self._solar_history.handle(*parsed, payload):
+                # Both must see the message (no short-circuit): only one claims it.
+                history = self._solar_history.handle(*parsed, payload)
+                bms = self._bms.handle(*parsed, payload)
+                if history or bms:
                     self._schedule_history_flush()
 
         self._publish(pairs, names)
@@ -138,7 +146,7 @@ class Subscriber:
 
     def _flush_history(self) -> None:
         with self._history_lock:
-            pairs = self._solar_history.flush()
+            pairs = self._solar_history.flush() + self._bms.flush()
         self._publish(pairs)
 
     def run_forever(self) -> None:

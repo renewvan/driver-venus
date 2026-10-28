@@ -129,3 +129,42 @@ def test_history_flush_does_not_name_the_driver_again(
     subscriber._flush_history()
     assert publisher.values == [("renewvan/solar/291/yield_history_wh", [210.0])]
     assert publisher.identity == []  # already named by yield_today_wh
+
+
+def test_bms_arrays_publish_once_on_the_flush_not_per_message(
+    subscriber: Subscriber, publisher: RecordingPublisher
+) -> None:
+    # Per-device paths arrive on the `N/<portal>/#` subscription, one scalar each.
+    for path, payload in fx.BMS_FORMAT_1.items():
+        send(subscriber, f"N/{PORTAL}/battery/512/{path}", payload)
+    subscriber._history_timer.cancel()
+    assert not any("cell_" in t and t.endswith("s_v") for t, _ in publisher.values)
+    assert ("renewvan/battery/512/allow_charge", True) in publisher.values
+    assert ("renewvan/battery/512/charge_voltage_limit_v", 14.2) in publisher.values
+    assert ("renewvan/battery/512/cell_voltage_max_v", 3.335) in publisher.values
+
+    publisher.identity.clear()
+    publisher.values.clear()
+    subscriber._flush_history()
+    assert publisher.values == [
+        ("renewvan/battery/512/cell_voltages_v", [3.331, 3.329, 3.335, 3.33]),
+        ("renewvan/battery/512/cell_balancing", [False, True, False, False]),
+        ("renewvan/battery/512/temperatures_c", [21.5, 22.0, None, None, 27.4]),
+    ]
+    assert publisher.identity == []  # named by the first scalar
+
+
+def test_bms_and_solar_history_share_one_flush(
+    subscriber: Subscriber, publisher: RecordingPublisher
+) -> None:
+    send(subscriber, f"N/{PORTAL}/solarcharger/291/History/Overall/DaysAvailable", {"value": 1})
+    send(subscriber, f"N/{PORTAL}/solarcharger/291/History/Daily/0/Yield", {"value": 0.21})
+    send(subscriber, f"N/{PORTAL}/battery/512/Alarms/HighVoltage", {"value": 2})
+    subscriber._history_timer.cancel()
+    publisher.values.clear()
+    subscriber._flush_history()
+    assert publisher.values == [
+        ("renewvan/solar/291/yield_history_wh", [210.0]),
+        ("renewvan/battery/512/protections", ["pack_overvoltage"]),
+    ]
+    assert ("renewvan/battery/512/driver", "venus") in publisher.identity

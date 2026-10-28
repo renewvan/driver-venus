@@ -111,3 +111,73 @@ SOLAR_YIELD_HISTORY_KWH = [
     {"value": 0.0},  # History/Daily/29/Yield
     {"value": 0.0},  # History/Daily/30/Yield
 ]
+
+
+# --- A BMS-class battery (dbus-serialbattery) ----------------------------------
+#
+# Not captured: this van's GX has no dbus-serialbattery service. Built from
+# hub's docs/research/venus-cell-paths.md (the payload envelope is the captured
+# `{"value": ...}`; the paths, units and null rules are read from
+# dbus-serialbattery's source), as `{venus path: payload}` for one 4-cell
+# LiFePO4 pack, device instance 512, `BATTERY_CELL_DATA_FORMAT = 1`.
+BMS_FORMAT_1: dict[str, dict] = {
+    "Voltages/Cell1": {"value": 3.331},
+    "Voltages/Cell2": {"value": 3.329},
+    "Voltages/Cell3": {"value": 3.335},
+    "Voltages/Cell4": {"value": 3.33},
+    "Balances/Cell1": {"value": 0},
+    "Balances/Cell2": {"value": 1},
+    "Balances/Cell3": {"value": 0},
+    "Balances/Cell4": {"value": 0},
+    "Voltages/Sum": {"value": 13.33},
+    "Voltages/Diff": {"value": 0.006},
+    "System/MaxCellVoltage": {"value": 3.335},
+    "System/MinCellVoltage": {"value": 3.329},
+    "System/MaxVoltageCellId": {"value": "C3"},
+    "System/MinVoltageCellId": {"value": "C2"},
+    # Two probes and a MOSFET sensor; the BMS has no probes 3 and 4.
+    "System/Temperature1": {"value": 21.5},
+    "System/Temperature2": {"value": 22.0},
+    "System/Temperature3": {"value": None},
+    "System/Temperature4": {"value": None},
+    "System/MOSTemperature": {"value": 27.4},
+    "Io/AllowToCharge": {"value": 1},
+    "Io/AllowToDischarge": {"value": 1},
+    "Info/MaxChargeVoltage": {"value": 14.2},
+    "Info/MaxChargeCurrent": {"value": 50.0},
+    "Info/MaxDischargeCurrent": {"value": 100.0},
+}
+
+# The ten alarms dbus-serialbattery writes with a value, plus the ones the
+# mapping ignores, all OK (0). `StateOfHealth` is registered but never written.
+BMS_ALARMS_OK: dict[str, dict] = {
+    f"Alarms/{name}": {"value": 0}
+    for name in (
+        "LowVoltage",
+        "HighVoltage",
+        "LowCellVoltage",
+        "HighCellVoltage",
+        "LowSoc",
+        "HighChargeCurrent",
+        "HighDischargeCurrent",
+        "CellImbalance",
+        "InternalFailure",
+        "HighChargeTemperature",
+        "LowChargeTemperature",
+        "HighTemperature",
+        "LowTemperature",
+        "HighInternalTemperature",
+        "FuseBlown",
+        "BmsCable",
+    )
+} | {"Alarms/StateOfHealth": {"value": None}}
+
+# `BATTERY_CELL_DATA_FORMAT = 2`: the `/Cell/<N>/Volts` layout, which has no
+# balance paths.
+BMS_FORMAT_2: dict[str, dict] = {
+    "Cell/1/Volts": {"value": 3.331},
+    "Cell/2/Volts": {"value": 3.329},
+    "Cell/3/Volts": {"value": 3.335},
+    "Cell/4/Volts": {"value": 3.33},
+    "Cell/Diff": {"value": 0.006},
+}
