@@ -106,6 +106,18 @@ def test_instance_without_a_label_gets_no_name(
     assert publisher.identity == [("renewvan/charger/289/driver", "venus")]
 
 
+def test_battery_fuel_gauge_reaches_the_bus(
+    subscriber: Subscriber, publisher: RecordingPublisher
+) -> None:
+    send(subscriber, f"N/{PORTAL}/battery/290/Capacity", fx.CAPACITY)
+    send(subscriber, f"N/{PORTAL}/battery/290/ConsumedAmphours", fx.CONSUMED_AMPHOURS)
+    assert publisher.values == [
+        ("renewvan/battery/290/capacity_ah", 314.0),
+        ("renewvan/battery/290/remaining_ah", 289.2),
+    ]
+    assert publisher.identity == [("renewvan/battery/290/driver", "venus")]
+
+
 def test_history_flush_does_not_name_the_driver_again(
     subscriber: Subscriber, publisher: RecordingPublisher
 ) -> None:

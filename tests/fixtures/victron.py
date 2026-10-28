@@ -64,6 +64,11 @@ TIME_TO_GO = {"value": 98400.0}
 TIME_TO_GO_SENTINEL = {"value": 863999.9375}
 TIME_TO_GO_NULL = {"value": None}
 
+# SmartShunt fuel gauge, captured from the live GX on 2026-10-28: the
+# configured bank capacity and the (negative) Ah drawn since the last sync.
+CAPACITY = {"value": 314.0}
+CONSUMED_AMPHOURS = {"value": -24.799999237060547}
+
 
 # --- Solar daily history -------------------------------------------------
 # Captured from a live GX (Venus OS v3.80, portal b827eb0cd27c) with one

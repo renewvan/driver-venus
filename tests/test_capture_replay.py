@@ -7,7 +7,12 @@ redacted in the capture.
 import json
 from pathlib import Path
 
-from driver_venus.mapping import InstanceIdentity, map_service_message, split_service_topic
+from driver_venus.mapping import (
+    BatteryFuelGauge,
+    InstanceIdentity,
+    map_service_message,
+    split_service_topic,
+)
 
 CAPTURE = Path(__file__).parent / "fixtures" / "venus_capture_2026-10-16.json"
 PORTAL = "PORTAL"
@@ -30,6 +35,20 @@ def test_ip22_capture_publishes_only_schema_fields():
         "renewvan/charger/289/source": "ac",
         "renewvan/charger/289/current_a": 30.0,
         "renewvan/charger/289/charge_state": "bulk",
+    }
+
+
+def test_smartshunt_capture_publishes_its_fuel_gauge():
+    gauge = BatteryFuelGauge()
+    published: dict[str, object] = {}
+    for topic, payload in json.loads(CAPTURE.read_text()).items():
+        parsed = split_service_topic(topic, PORTAL)
+        if parsed is not None:
+            published.update(gauge.handle(*parsed, payload))
+    # Capacity 314.0, ConsumedAmphours -16.4 at a reported SoC of 95.5.
+    assert published == {
+        "renewvan/battery/290/capacity_ah": 314.0,
+        "renewvan/battery/290/remaining_ah": 297.6,
     }
 
 

@@ -56,6 +56,8 @@ another driver (e.g. `wattcycle`) publishes the same entity type.
 | `system/0/Batteries[]` `temperature` | `battery/<instance>/temperature_c` | only when the device has a probe |
 | `battery/<n>/TimeToGo` | `battery/<n>/time_to_go_s` | Venus's `null` clears the topic; its ~10-day cap (863999.9375 s) is published as-is |
 | `battery/<n>/History/TimeSinceLastFullCharge` | `battery/<n>/time_since_full_charge_s` | |
+| `battery/<n>/Capacity` | `battery/<n>/capacity_ah` | a shunt's configured bank capacity |
+| `battery/<n>/Capacity` + `ConsumedAmphours` | `battery/<n>/remaining_ah` | capacity plus the shunt's (negative) Ah drawn since its last sync, clamped at 0; published once both are known. A service that reports `InstalledCapacity` (whose `Capacity` may already be the remaining Ah) publishes neither |
 | `system/0/SystemState/State` | `battery/<id>/charge_state` | one system-wide value, fanned out to every battery id seen |
 | `solarcharger/<n>/Yield/Power` | `solar/<n>/power_w` | |
 | `solarcharger/<n>/Dc/0/Voltage`/`Current` | `solar/<n>/battery_voltage_v`/`battery_current_a` | |

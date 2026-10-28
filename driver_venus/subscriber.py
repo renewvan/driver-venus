@@ -24,6 +24,7 @@ import paho.mqtt.client as mqtt
 
 from driver_venus.config import AppConfig
 from driver_venus.mapping import (
+    BatteryFuelGauge,
     InstanceIdentity,
     SolarYieldHistory,
     map_batteries,
@@ -57,6 +58,9 @@ class Subscriber:
         self._solar_history = SolarYieldHistory()
         self._history_lock = threading.Lock()
         self._history_timer: threading.Timer | None = None
+        # Pairs each battery's Capacity with its ConsumedAmphours; Venus client
+        # thread only.
+        self._fuel_gauge = BatteryFuelGauge()
         # `driver` / `name` of each discovered instance; touched from the Venus
         # client thread and the history flush timer.
         self._identity = InstanceIdentity()
@@ -100,7 +104,9 @@ class Subscriber:
             parsed = split_service_topic(msg.topic, self._config.venus.portal_id)
             if parsed is None:
                 return
-            pairs = map_service_message(*parsed, payload)
+            pairs = map_service_message(*parsed, payload) + self._fuel_gauge.handle(
+                *parsed, payload
+            )
             with self._identity_lock:
                 names = self._identity.label_pairs(*parsed, payload)
             with self._history_lock:
