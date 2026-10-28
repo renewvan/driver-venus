@@ -2,9 +2,13 @@
 broker or GX device required.
 """
 
+import json
+from pathlib import Path
+
 import pytest
 
 from driver_venus.mapping import (
+    BatteryBms,
     BatteryFuelGauge,
     InstanceIdentity,
     SolarYieldHistory,
@@ -14,6 +18,8 @@ from driver_venus.mapping import (
     split_service_topic,
 )
 from tests.fixtures import victron as fx
+
+CAPTURE = Path(__file__).parent / "fixtures" / "venus_capture_2026-10-16.json"
 
 
 # --- batteries (system/0/Batteries aggregate) ---------------------------------
@@ -299,6 +305,66 @@ def test_fuel_gauge_ignores_other_services_and_paths():
     gauge = BatteryFuelGauge()
     assert gauge.handle("solarcharger", "291", "Capacity", fx.CAPACITY) == []
     assert gauge.handle("battery", "290", "Soc", {"value": 92.6}) == []
+
+
+# --- BMS limits, cell extremes, allow flags (stateless) ----------------------
+
+
+@pytest.mark.parametrize(
+    "path, prop, value",
+    [
+        ("Info/MaxChargeVoltage", "charge_voltage_limit_v", 14.2),
+        ("Info/MaxChargeCurrent", "charge_current_limit_a", 50.0),
+        ("Info/MaxDischargeCurrent", "discharge_current_limit_a", 100.0),
+        ("System/MaxCellVoltage", "cell_voltage_max_v", 3.335),
+        ("System/MinCellVoltage", "cell_voltage_min_v", 3.329),
+        ("Voltages/Diff", "cell_voltage_delta_v", 0.006),
+        ("Cell/Diff", "cell_voltage_delta_v", 0.006),
+    ],
+)
+def test_bms_scalars_map_straight_through(path, prop, value):
+    payload = {"value": value}
+    assert map_service_message("battery", "512", path, payload) == [
+        (f"renewvan/battery/512/{prop}", value)
+    ]
+    assert map_service_message("battery", "512", path, {"value": None}) == [
+        (f"renewvan/battery/512/{prop}", None)
+    ]
+
+
+def test_bms_scalars_come_from_the_fixture_unchanged():
+    published = {}
+    for path, payload in fx.BMS_FORMAT_1.items():
+        published.update(map_service_message("battery", "512", path, payload))
+    assert published["renewvan/battery/512/charge_voltage_limit_v"] == 14.2
+    assert published["renewvan/battery/512/cell_voltage_max_v"] == 3.335
+    assert published["renewvan/battery/512/cell_voltage_min_v"] == 3.329
+    assert published["renewvan/battery/512/cell_voltage_delta_v"] == 0.006
+    # Cell ids, the sum and the probe names have no schema property.
+    assert not any("cell_id" in t or "sum" in t for t in published)
+
+
+def test_allow_flags_publish_booleans_and_unknown_is_false():
+    assert map_service_message("battery", "512", "Io/AllowToCharge", {"value": 1}) == [
+        ("renewvan/battery/512/allow_charge", True)
+    ]
+    # Venus reads an unknown FET state as 0 (it never sends null): published as false.
+    assert map_service_message("battery", "512", "Io/AllowToDischarge", {"value": 0}) == [
+        ("renewvan/battery/512/allow_discharge", False)
+    ]
+
+
+def test_allow_flag_null_clears_and_junk_publishes_nothing():
+    assert map_service_message("battery", "512", "Io/AllowToCharge", {"value": None}) == [
+        ("renewvan/battery/512/allow_charge", None)
+    ]
+    assert map_service_message("battery", "512", "Io/AllowToCharge", {"value": 7}) == []
+    assert map_service_message("battery", "512", "Io/AllowToCharge", {"value": "on"}) == []
+
+
+def test_allow_to_balance_and_heat_are_ignored():
+    assert map_service_message("battery", "512", "Io/AllowToBalance", {"value": 1}) == []
+    assert map_service_message("battery", "512", "Io/AllowToHeat", {"value": 1}) == []
 
 
 # --- everything else is ignored -----------------------------------------------
@@ -621,3 +687,292 @@ def test_non_label_paths_and_other_services_produce_no_name():
     assert _label(identity, "battery", "290", "Devices/0/CustomName", "Van") == []
     assert _label(identity, "vebus", "276", "CustomName", "Multi") == []
     assert _label(identity, "battery", "290", "Soc", 80) == []
+
+
+# --- BMS arrays -> cell_voltages_v, cell_balancing, temperatures_c, protections ---
+
+BMS_ID = "512"
+
+
+def _bms(messages, bms=None, instance=BMS_ID):
+    """A `BatteryBms` that has been sent `{path: payload}` and flushed once, as
+    after a quiet period; returns `(bms, {property: array})`."""
+    bms = bms or BatteryBms()
+    for path, payload in messages.items():
+        bms.handle("battery", instance, path, payload)
+    return bms, _flushed(bms)
+
+
+def _flushed(bms):
+    return {topic.rsplit("/", 1)[1]: array for topic, array in bms.flush()}
+
+
+def test_bms_format_1_publishes_every_array():
+    _, out = _bms(fx.BMS_FORMAT_1 | fx.BMS_ALARMS_OK)
+    assert out == {
+        "cell_voltages_v": [3.331, 3.329, 3.335, 3.33],
+        "cell_balancing": [False, True, False, False],
+        # Probes 1-4 then the MOSFET: a probe the BMS lacks is null, keeping its index.
+        "temperatures_c": [21.5, 22.0, None, None, 27.4],
+        "protections": [],
+    }
+
+
+def test_bms_topics_are_under_the_instance():
+    bms = BatteryBms()
+    bms.handle("battery", BMS_ID, "Voltages/Cell1", {"value": 3.3})
+    assert bms.flush() == [("renewvan/battery/512/cell_voltages_v", [3.3])]
+
+
+def test_bms_format_2_has_voltages_and_no_balancing():
+    _, out = _bms(fx.BMS_FORMAT_2)
+    assert out == {"cell_voltages_v": [3.331, 3.329, 3.335, 3.33]}
+
+
+def test_bms_format_3_carries_each_cell_once():
+    both = fx.BMS_FORMAT_1 | fx.BMS_FORMAT_2
+    _, out = _bms(both)
+    assert out["cell_voltages_v"] == [3.331, 3.329, 3.335, 3.33]
+    assert out["cell_balancing"] == [False, True, False, False]
+
+
+def test_bms_publishes_nothing_until_flushed_and_then_once():
+    bms = BatteryBms()
+    for path, payload in fx.BMS_FORMAT_1.items():
+        bms.handle("battery", BMS_ID, path, payload)
+    assert len(bms.flush()) == 3  # cells, balancing, temperatures
+    assert bms.flush() == []
+
+
+def test_bms_handle_reports_only_bms_paths():
+    bms = BatteryBms()
+    assert bms.handle("battery", BMS_ID, "Voltages/Cell1", {"value": 3.3})
+    assert bms.handle("battery", BMS_ID, "Balances/Cell1", {"value": 0})
+    assert bms.handle("battery", BMS_ID, "System/MOSTemperature", {"value": 20.0})
+    assert bms.handle("battery", BMS_ID, "Alarms/HighVoltage", {"value": 0})
+    for path in ("Soc", "Dc/0/Voltage", "Voltages/Sum", "System/MaxCellVoltage", "Alarms/LowSoc"):
+        assert not bms.handle("battery", BMS_ID, path, {"value": 1})
+    assert not bms.handle("solarcharger", "291", "Voltages/Cell1", {"value": 3.3})
+    assert not bms.handle("battery", BMS_ID, "Voltages/Cell33", {"value": 3.3})
+    assert not bms.handle("battery", BMS_ID, "Voltages/Cell0", {"value": 3.3})
+
+
+def test_bms_cell_arrays_arrive_in_any_order():
+    reversed_ = dict(reversed(list(fx.BMS_FORMAT_1.items())))
+    _, out = _bms(reversed_)
+    assert out["cell_voltages_v"] == [3.331, 3.329, 3.335, 3.33]
+    assert out["cell_balancing"] == [False, True, False, False]
+
+
+def test_bms_null_cell_is_a_null_slot_never_zero():
+    messages = dict(fx.BMS_FORMAT_1) | {"Voltages/Cell3": {"value": None}}
+    _, out = _bms(messages)
+    assert out["cell_voltages_v"] == [3.331, 3.329, None, 3.33]
+    assert len(out["cell_balancing"]) == 4
+
+
+@pytest.mark.parametrize("bad", [-0.1, "3.3", True])
+def test_bms_unreadable_cell_reading_is_a_null_slot(bad):
+    _, out = _bms({"Voltages/Cell1": {"value": 3.3}, "Voltages/Cell2": {"value": bad}})
+    assert out["cell_voltages_v"] == [3.3, None]
+
+
+def test_bms_cell_never_received_below_the_last_is_null():
+    _, out = _bms({"Voltages/Cell1": {"value": 3.3}, "Voltages/Cell3": {"value": 3.4}})
+    assert out["cell_voltages_v"] == [3.3, None, 3.4]
+
+
+def test_bms_all_cells_null_publishes_no_array():
+    _, out = _bms({f"Voltages/Cell{n}": {"value": None} for n in range(1, 5)})
+    assert out == {}
+
+
+def test_bms_balancing_needs_cell_voltages_and_a_known_balance():
+    _, out = _bms({"Balances/Cell1": {"value": 1}, "Balances/Cell2": {"value": 0}})
+    assert out == {}
+    _, out = _bms(
+        {
+            "Voltages/Cell1": {"value": 3.3},
+            "Voltages/Cell2": {"value": 3.3},
+            "Balances/Cell1": {"value": None},
+            "Balances/Cell2": {"value": None},
+        }
+    )
+    assert out == {"cell_voltages_v": [3.3, 3.3]}
+
+
+def test_bms_balancing_is_never_padded_or_truncated():
+    messages = {f"Voltages/Cell{n}": {"value": 3.3} for n in range(1, 5)}
+    messages["Balances/Cell1"] = {"value": 1}
+    messages["Balances/Cell7"] = {"value": 1}  # beyond the cells the BMS reports volts for
+    _, out = _bms(messages)
+    assert out["cell_balancing"] == [True, None, None, None]
+
+
+def test_bms_cell_count_change_replaces_both_arrays_in_one_flush():
+    bms, first = _bms(fx.BMS_FORMAT_1)
+    assert len(first["cell_voltages_v"]) == len(first["cell_balancing"]) == 4
+    more = {
+        f"{kind}{n}": {"value": 3.3 if kind == "Voltages/Cell" else 0}
+        for n in (5, 6, 7, 8)
+        for kind in ("Voltages/Cell", "Balances/Cell")
+    }
+    _, second = _bms(more, bms)
+    assert len(second["cell_voltages_v"]) == len(second["cell_balancing"]) == 8
+
+
+def test_bms_unchanged_arrays_are_not_republished():
+    bms, _ = _bms(fx.BMS_FORMAT_1 | fx.BMS_ALARMS_OK)
+    # A keepalive: Venus re-sends everything.
+    assert _bms(fx.BMS_FORMAT_1 | fx.BMS_ALARMS_OK, bms)[1] == {}
+    _, out = _bms({"Voltages/Cell1": {"value": 3.4}}, bms)
+    assert out == {"cell_voltages_v": [3.4, 3.329, 3.335, 3.33]}
+
+
+def test_bms_instances_are_kept_apart():
+    bms = BatteryBms()
+    bms.handle("battery", "512", "Voltages/Cell1", {"value": 3.3})
+    bms.handle("battery", "513", "Voltages/Cell1", {"value": 3.4})
+    assert dict(bms.flush()) == {
+        "renewvan/battery/512/cell_voltages_v": [3.3],
+        "renewvan/battery/513/cell_voltages_v": [3.4],
+    }
+
+
+def test_bms_array_that_loses_all_its_data_is_cleared():
+    bms, _ = _bms(fx.BMS_FORMAT_1)
+    nulls = {path: {"value": None} for path in fx.BMS_FORMAT_1}
+    assert dict(_pairs(bms, nulls)) == {
+        "renewvan/battery/512/cell_voltages_v": None,
+        "renewvan/battery/512/cell_balancing": None,
+        "renewvan/battery/512/temperatures_c": None,
+    }
+
+
+def _pairs(bms, messages):
+    for path, payload in messages.items():
+        bms.handle("battery", BMS_ID, path, payload)
+    return bms.flush()
+
+
+def test_bms_temperatures_run_through_the_last_probe_seen():
+    _, out = _bms({"System/Temperature1": {"value": 20.0}})
+    assert out == {"temperatures_c": [20.0]}
+    _, out = _bms({"System/MOSTemperature": {"value": 30.0}})
+    assert out == {"temperatures_c": [None, None, None, None, 30.0]}
+
+
+def test_bms_temperatures_keep_negative_readings():
+    _, out = _bms({"System/Temperature1": {"value": -4.5}, "System/Temperature2": {"value": 0.0}})
+    assert out == {"temperatures_c": [-4.5, 0.0]}
+
+
+def test_bms_all_probes_null_publishes_no_array():
+    _, out = _bms(
+        {"System/Temperature1": {"value": None}, "System/MOSTemperature": {"value": None}}
+    )
+    assert out == {}
+
+
+# --- protections ---------------------------------------------------------------
+
+
+def _alarms(**levels):
+    return {f"Alarms/{name}": {"value": level} for name, level in levels.items()}
+
+
+def test_protections_only_alarm_level_two_is_active():
+    _, out = _bms(_alarms(HighCellVoltage=2, LowCellVoltage=1, HighVoltage=0))
+    assert out == {"protections": ["cell_overvoltage"]}
+
+
+def test_protections_come_out_in_vocabulary_order_without_duplicates():
+    # `HighTemperature` and `LowVoltage` arrive before the cell alarms; a second
+    # alarm that maps to nothing new adds nothing.
+    _, out = _bms(
+        _alarms(HighTemperature=2, LowVoltage=2, LowCellVoltage=2, HighCellVoltage=2, HighVoltage=2)
+    )
+    assert out == {
+        "protections": [
+            "cell_overvoltage",
+            "cell_undervoltage",
+            "pack_overvoltage",
+            "pack_undervoltage",
+            "overtemperature",
+        ]
+    }
+
+
+@pytest.mark.parametrize(
+    "alarm, name",
+    [
+        ("HighCellVoltage", "cell_overvoltage"),
+        ("LowCellVoltage", "cell_undervoltage"),
+        ("HighVoltage", "pack_overvoltage"),
+        ("LowVoltage", "pack_undervoltage"),
+        ("HighChargeTemperature", "charge_overtemperature"),
+        ("LowChargeTemperature", "charge_undertemperature"),
+        ("HighChargeCurrent", "charge_overcurrent"),
+        ("HighDischargeCurrent", "discharge_overcurrent"),
+        ("InternalFailure", "internal_fault"),
+        ("CellImbalance", "cell_imbalance"),
+        ("HighTemperature", "overtemperature"),
+        ("LowTemperature", "undertemperature"),
+    ],
+)
+def test_protections_map_each_alarm_by_name(alarm, name):
+    _, out = _bms(_alarms(**{alarm: 2}))
+    assert out == {"protections": [name]}
+
+
+def test_protections_unmapped_alarm_is_other_and_logged(caplog):
+    with caplog.at_level("WARNING"):
+        _, out = _bms(_alarms(HighInternalTemperature=2, MidVoltage=2, Contactor=2))
+    assert out == {"protections": ["other"]}
+    assert "HighInternalTemperature" in caplog.text
+
+
+def test_protections_ignored_alarms_are_neither_other_nor_reported():
+    _, out = _bms(_alarms(LowSoc=2, BmsCable=2, FuseBlown=2, StateOfHealth=2))
+    assert out == {}
+    _, out = _bms(_alarms(LowSoc=2, BmsCable=2, FuseBlown=2) | _alarms(HighVoltage=0))
+    assert out == {"protections": []}
+
+
+def test_protections_empty_means_reported_and_none_active():
+    _, out = _bms(fx.BMS_ALARMS_OK)
+    assert out == {"protections": []}
+
+
+def test_protections_all_null_alarms_leave_the_property_absent():
+    _, out = _bms(_alarms(HighVoltage=None, LowVoltage=None, Alarm=None))
+    assert out == {}
+
+
+def test_protections_one_reported_alarm_is_enough_to_publish():
+    _, out = _bms(_alarms(HighVoltage=None, LowVoltage=0))
+    assert out == {"protections": []}
+
+
+def test_protections_update_and_clear():
+    bms, out = _bms(fx.BMS_ALARMS_OK)
+    assert out == {"protections": []}
+    assert _bms(_alarms(LowCellVoltage=2), bms)[1] == {"protections": ["cell_undervoltage"]}
+    assert _bms(_alarms(LowCellVoltage=1), bms)[1] == {"protections": []}
+    nulls = {path: {"value": None} for path in fx.BMS_ALARMS_OK}
+    assert _bms(nulls, bms)[1] == {"protections": None}
+
+
+def test_the_smartshunt_capture_has_no_cells_probes_limits_or_flags():
+    bms = BatteryBms()
+    stateless = {}
+    for topic, payload in json.loads(CAPTURE.read_text()).items():
+        parsed = split_service_topic(topic, "PORTAL")
+        if parsed is not None:
+            bms.handle(*parsed, payload)
+            stateless.update(map_service_message(*parsed, payload))
+    props = {t.rsplit("/", 1)[1] for t in stateless}
+    assert not props & {"allow_charge", "allow_discharge", "cell_voltage_max_v"}
+    assert not any(p.endswith("_limit_v") or p.endswith("_limit_a") for p in props)
+    # Its alarms all read OK, which is a source that reports protections with none active.
+    assert _flushed(bms) == {"protections": []}
