@@ -1,6 +1,9 @@
 .venv/
 *.egg-info/
 .pytest_cache/
+/config.ini
+__pycache__/
+*.pyc
 
 # Local scratch notes; never committed
 .scratch/

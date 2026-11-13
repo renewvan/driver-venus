@@ -1,0 +1,12 @@
+; driver-venus — local configuration
+; ======================================
+; Copy this file to config.ini and override only what differs from
+; config.default.ini. config.ini is gitignored — it holds this
+; installation's real broker hosts and the Venus OS portal ID.
+
+[mqtt]
+host = 192.168.1.10
+
+[venus]
+host = 192.168.1.50
+portal_id = abc123
