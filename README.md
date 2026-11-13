@@ -128,23 +128,33 @@ from a Venus OS device with a SmartShunt, an MPPT and an Orion DC-DC charger.
 
 ## Configuration
 
-Environment variables (matches `hub`'s `docker-compose.yml` `driver-venus:`
-service block):
+Same layered pattern as the other renewvan drivers:
+`config.default.ini` ships every key with a default and documents each.
+Copy `config.ini.example` to `config.ini` (gitignored) and override only what
+differs. Environment variables override both files; they are what `hub`'s
+`docker-compose.yml` `driver-venus:` service block sets, so that block needs
+no `config.ini` mount.
 
-| Variable | Default | Notes |
-|---|---|---|
-| `MQTT_HOST` | `mosquitto` | Renewvan bus broker |
-| `MQTT_PORT` | `1883` | |
-| `MQTT_USERNAME` | _(none)_ | |
-| `MQTT_PASSWORD` | _(none)_ | |
-| `VENUS_MQTT_HOST` | _(required)_ | The Venus OS device's own broker |
-| `VENUS_MQTT_PORT` | `1883` | |
-| `VENUS_PORTAL_ID` | _(required)_ | Venus OS portal ID (`N/<portalId>/…`), from the device |
+| `config.ini` key | Environment variable | Default | Notes |
+|---|---|---|---|
+| `[mqtt] host` | `MQTT_HOST` | `localhost` | Renewvan bus broker |
+| `[mqtt] port` | `MQTT_PORT` | `1883` | |
+| `[mqtt] username` | `MQTT_USERNAME` | _(none)_ | |
+| `[mqtt] password` | `MQTT_PASSWORD` | _(none)_ | |
+| `[venus] host` | `VENUS_MQTT_HOST` | _(required)_ | The Venus OS device's own broker |
+| `[venus] port` | `VENUS_MQTT_PORT` | `1883` | |
+| `[venus] portal_id` | `VENUS_PORTAL_ID` | _(required)_ | Venus OS portal ID (`N/<portalId>/…`), from the device |
+
+An empty environment variable counts as unset. The driver refuses to start
+when `[venus] host` or `portal_id` ends up empty.
 
 ## Running
 
 ```bash
 pip install -r requirements.txt
+cp config.ini.example config.ini   # then edit the hosts and portal ID
+python -m driver_venus.main --config config.ini
+# or, with no config.ini:
 VENUS_MQTT_HOST=192.168.1.50 VENUS_PORTAL_ID=abc123 python -m driver_venus.main
 ```
 
