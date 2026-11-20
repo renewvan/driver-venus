@@ -1,6 +1,6 @@
 # driver-venus
 
-Victron Venus OS MQTT → renewvan bus. Bridges everything a Venus OS device
+Victron Venus OS MQTT → Renewvan bus. Bridges everything a Venus OS device
 (Cerbo GX, Raspberry Pi running Venus OS, …) already knows about the van's
 power system onto the vendor-neutral `battery`, `solar` and `charger`
 entities from `hub`'s `schema/`. No new sensing, just a topic remap of an
@@ -50,7 +50,7 @@ another driver (e.g. `wattcycle`) publishes the same entity type.
 
 ## Mapping
 
-| Venus source | → renewvan topic | Notes |
+| Venus source | → Renewvan topic | Notes |
 |---|---|---|
 | `system/0/Batteries[]` `soc`/`voltage`/`current`/`power` | `battery/<instance>/soc_pct`/`voltage_v`/`current_a`/`power_w` | direct copy, signed (+charging) |
 | `system/0/Batteries[]` `temperature` | `battery/<instance>/temperature_c` | only when the device has a probe |
@@ -128,7 +128,7 @@ from a Venus OS device with a SmartShunt, an MPPT and an Orion DC-DC charger.
 
 ## Configuration
 
-Same layered pattern as the other renewvan drivers:
+Same layered pattern as the other Renewvan drivers:
 `config.default.ini` ships every key with a default and documents each.
 Copy `config.ini.example` to `config.ini` (gitignored) and override only what
 differs. Environment variables override both files; they are what `hub`'s
@@ -177,7 +177,7 @@ file pins by tag (never builds from source — see
 
 A beta from a feature branch: dispatch the workflow on that branch with **prerelease**
 ticked. It runs the tests, publishes only its own tag (never `:latest`) and writes nothing
-to `main`. The process is shared by every renewvan repo and lives in `hub` (`hub/docs/adr/0015-one-release-process-via-reusable-workflows.md`);
+to `main`. The process is shared by every Renewvan repo and lives in `hub` (`hub/docs/adr/0015-one-release-process-via-reusable-workflows.md`);
 this repo's `release.yml` only says what it ships.
 
 The release workflow passes the tag as the `DRIVER_VERSION` build argument, which
